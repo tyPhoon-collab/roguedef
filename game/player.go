@@ -13,6 +13,7 @@ type Vec2 = vector.Vec2
 type Player struct {
 	*trait.Sprite
 	trait.Intersector
+	trait.Object
 }
 
 func (p *Player) Update() {

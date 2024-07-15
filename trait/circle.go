@@ -22,7 +22,7 @@ func (c *Circle) Intersects(other Intersector) bool {
 }
 
 func (c *Circle) IntersectsCircle(other *Circle) bool {
-	return c.Transform.Pos.Sub(other.Transform.Pos).Len() < c.Radius+other.Radius
+	return c.Pos.Sub(other.Pos).Len() < c.Radius+other.Radius
 }
 
 func (c *Circle) Trans() *Transform {
