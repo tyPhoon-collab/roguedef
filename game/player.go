@@ -1,14 +1,19 @@
-package main
+package game
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+
+	"roguedef/trait"
+	"roguedef/vector"
 )
+
+type Vec2 = vector.Vec2
 
 type Player struct {
 	image *ebiten.Image
 
-	HasPosition
+	trait.HasPosition
 }
 
 func (p *Player) Update() {

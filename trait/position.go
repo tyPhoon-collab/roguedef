@@ -1,4 +1,10 @@
-package main
+package trait
+
+import (
+	"roguedef/vector"
+)
+
+type Vec2 = vector.Vec2
 
 type HasPosition struct {
 	Pos Vec2
