@@ -7,3 +7,7 @@ type Intersector interface {
 	Draw(screen *ebiten.Image)
 	Trans() *Transform
 }
+
+type IntersectHandler interface {
+	OnIntersect(other Intersector)
+}

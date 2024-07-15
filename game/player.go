@@ -1,6 +1,8 @@
 package game
 
 import (
+	"fmt"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 
@@ -43,9 +45,17 @@ func (p *Player) move(dir Vec2) {
 	}
 }
 
+func (p *Player) OnIntersect(other trait.Intersector) {
+	fmt.Println("Intersect. Me:", p, " Other:", other)
+}
+
 func (p *Player) Draw(screen *ebiten.Image) {
 	p.Sprite.Draw(screen)
 	p.Intersector.Draw(screen)
+}
+
+func (p *Player) String() string {
+	return "Player: " + p.Pos.String()
 }
 
 func NewPlayer() (*Player, error) {

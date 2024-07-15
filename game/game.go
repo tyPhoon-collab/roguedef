@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"roguedef/trait"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -9,10 +8,11 @@ import (
 )
 
 type Game struct {
-	*Player
-	drawers    []trait.Drawer
-	updaters   []trait.Updater
-	intersects []trait.Intersector
+	player            *Player
+	drawers           []trait.Drawer
+	updaters          []trait.Updater
+	intersects        []trait.Intersector
+	intersectHandlers map[trait.Intersector]trait.IntersectHandler
 }
 
 func (g *Game) Update() error {
@@ -20,13 +20,17 @@ func (g *Game) Update() error {
 		o.Update()
 	}
 
-	for _, o := range g.intersects {
-		for _, other := range g.intersects {
-			if o == other {
-				continue
-			}
-			if o.Intersects(other) {
-				fmt.Println(o, other)
+	for i := 0; i < len(g.intersects); i++ {
+		for j := i + 1; j < len(g.intersects); j++ {
+			o1 := g.intersects[i]
+			o2 := g.intersects[j]
+			if o1.Intersects(o2) {
+				if handler, ok := g.intersectHandlers[o1]; ok {
+					handler.OnIntersect(o2)
+				}
+				if handler, ok := g.intersectHandlers[o2]; ok {
+					handler.OnIntersect(o1)
+				}
 			}
 		}
 	}
@@ -34,7 +38,7 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, g.Player.Pos.String())
+	ebitenutil.DebugPrint(screen, g.player.Pos.String())
 
 	for _, o := range g.drawers {
 		o.Draw(screen)
@@ -54,9 +58,12 @@ func NewGame() *Game {
 	}
 
 	return &Game{
-		Player:     player,
+		player:     player,
 		drawers:    []trait.Drawer{player, cursor},
 		updaters:   []trait.Updater{player, cursor},
 		intersects: []trait.Intersector{player.Intersector, cursor.Intersector},
+		intersectHandlers: map[trait.Intersector]trait.IntersectHandler{
+			player.Intersector: player,
+		},
 	}
 }
