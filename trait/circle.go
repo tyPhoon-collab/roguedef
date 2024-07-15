@@ -52,7 +52,7 @@ func (c *Circle) Draw(screen *ebiten.Image) {
 	x := float32(center.X)
 	y := float32(center.Y)
 	radius := float32(c.ScaledRadius())
-	ebitenVector.StrokeCircle(screen, x, y, radius, 2, color.White, false)
+	ebitenVector.StrokeCircle(screen, x, y, radius, 1, color.White, false)
 }
 
 func (c *Circle) WithTransform(transform *Transform) *Circle {

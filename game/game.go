@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 // short hand for trait.NewObject()
@@ -30,27 +31,27 @@ func (g *Game) Update() error {
 
 	g.checkIntersects()
 
-	if ebiten.IsKeyPressed(ebiten.KeySpace) {
-		built := g.newBuiltObject()
-		g.AddObject(built)
+	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+		bullet := g.newBulletObject()
+		g.AddObject(bullet)
 	}
 
 	return nil
 }
 
-func (g *Game) newBuiltObject() *trait.Object {
-	built := NewBuilt()
+func (g *Game) newBulletObject() *trait.Object {
+	bullet := NewBullet()
 
-	built.Velocity.Transform.Pos = g.player.Pos
-	built.Set(Vec2{
+	bullet.Velocity.Transform.Pos = g.player.Pos
+	bullet.Set(Vec2{
 		X: 1,
 		Y: 0,
 	})
 
 	return new().
-		WithDrawer(built).
-		WithUpdater(built).
-		WithIntersector(built.Intersector)
+		WithDrawer(bullet).
+		WithUpdater(bullet).
+		WithIntersector(bullet.Intersector)
 }
 
 func (g *Game) checkIntersects() {
