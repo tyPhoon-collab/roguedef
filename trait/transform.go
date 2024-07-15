@@ -16,12 +16,20 @@ func (p *Transform) Move(delta Vec2) {
 	p.Pos = p.Pos.Add(delta)
 }
 
-func (p *Transform) MoveTo(x, y float64) {
-	p.Pos = Vec2{X: x, Y: y}
+func (p *Transform) MoveTo(vec Vec2) {
+	p.Pos = vec
 }
 
 func (p *Transform) String() string {
 	return p.Pos.String()
+}
+
+func (p *Transform) Copy() *Transform {
+	return &Transform{
+		Pos:   p.Pos,
+		Rot:   p.Rot,
+		Scale: p.Scale,
+	}
 }
 
 func NewTransform() *Transform {

@@ -12,31 +12,39 @@ type Vec2 = vector.Vec2
 
 type Player struct {
 	*trait.Sprite
+	trait.Intersector
 }
 
 func (p *Player) Update() {
-	delta := Vec2{X: 0, Y: 0}
+	dir := Vec2{}
 
 	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-		delta.X = 1
+		dir.X = 1
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-		delta.X = -1
+		dir.X = -1
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
-		delta.Y = -1
+		dir.Y = -1
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
-		delta.Y = 1
+		dir.Y = 1
 	}
 
-	if delta, err := delta.DivScalar(10); err == nil {
-		p.Move(delta.MulScalar(10))
+	p.move(dir)
+}
+
+func (p *Player) move(dir Vec2) {
+	if dir, err := dir.DivScalar(10); err == nil {
+		delta := dir.MulScalar(10)
+		p.Move(delta)
+		p.Intersector.Trans().Move(delta)
 	}
 }
 
 func (p *Player) Draw(screen *ebiten.Image) {
 	p.Sprite.Draw(screen)
+	p.Intersector.Draw(screen)
 }
 
 func NewPlayer() (*Player, error) {
@@ -46,7 +54,15 @@ func NewPlayer() (*Player, error) {
 		return nil, err
 	}
 
+	transform := trait.NewTransform()
+
+	sprite := trait.NewSpriteWithTransform(playerImage, transform)
+	circle := trait.NewCircleFromImage(playerImage)
+
+	circle.Move(transform.Pos)
+
 	return &Player{
-		Sprite: trait.NewSprite(playerImage),
+		Sprite:      sprite,
+		Intersector: circle,
 	}, nil
 }
