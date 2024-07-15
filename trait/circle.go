@@ -1,7 +1,9 @@
 package trait
 
 import (
+	"fmt"
 	"image/color"
+	"reflect"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	ebitenVector "github.com/hajimehoshi/ebiten/v2/vector"
@@ -17,8 +19,10 @@ func (c *Circle) Intersects(other Intersector) bool {
 	switch other := other.(type) {
 	case *Circle:
 		return c.IntersectsCircle(other)
+	default:
+		fmt.Println("type is not associated:", reflect.TypeOf(other))
+		return false
 	}
-	return false
 }
 
 func (c *Circle) IntersectsCircle(other *Circle) bool {

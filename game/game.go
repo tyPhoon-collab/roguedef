@@ -3,16 +3,24 @@ package game
 import (
 	"roguedef/trait"
 
+	"github.com/google/uuid"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+// short hand for trait.NewObject()
+func new() *trait.Object {
+	return trait.NewObject()
+}
+
+type id = uuid.UUID
+
 type Game struct {
 	player            *Player
-	drawers           []trait.Drawer
-	updaters          []trait.Updater
-	intersects        []trait.Intersector
-	intersectHandlers map[trait.Intersector]trait.IntersectHandler
+	drawers           map[id]trait.Drawer
+	updaters          map[id]trait.Updater
+	intersects        map[id]trait.Intersector
+	intersectHandlers map[id]trait.IntersectHandler
 }
 
 func (g *Game) Update() error {
@@ -20,21 +28,36 @@ func (g *Game) Update() error {
 		o.Update()
 	}
 
+	g.checkIntersects()
+
+	// if ebiten.IsKeyPressed(ebiten.KeySpace) {}
+
+	return nil
+}
+
+func (g *Game) checkIntersects() {
+	keys := make([]id, 0, len(g.intersects))
+	values := make([]trait.Intersector, 0, len(g.intersects))
+
+	for k, v := range g.intersects {
+		keys = append(keys, k)
+		values = append(values, v)
+	}
+
 	for i := 0; i < len(g.intersects); i++ {
 		for j := i + 1; j < len(g.intersects); j++ {
-			o1 := g.intersects[i]
-			o2 := g.intersects[j]
-			if o1.Intersects(o2) {
-				if handler, ok := g.intersectHandlers[o1]; ok {
-					handler.OnIntersect(o2)
+			k1, k2 := keys[i], keys[j]
+			v1, v2 := values[i], values[j]
+			if v1.Intersects(v2) {
+				if handler, ok := g.intersectHandlers[k2]; ok {
+					handler.OnIntersect(v2)
 				}
-				if handler, ok := g.intersectHandlers[o2]; ok {
-					handler.OnIntersect(o1)
+				if handler, ok := g.intersectHandlers[k1]; ok {
+					handler.OnIntersect(v1)
 				}
 			}
 		}
 	}
-	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
@@ -49,21 +72,56 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return 320, 240
 }
 
+func (g *Game) AddObject(o *trait.Object) *Game {
+	if o.Drawer != nil {
+		g.drawers[o.ID] = o.Drawer
+	}
+
+	if o.Updater != nil {
+		g.updaters[o.ID] = o.Updater
+	}
+
+	if o.Intersector != nil {
+		g.intersects[o.ID] = o.Intersector
+	}
+
+	if o.IntersectHandler != nil {
+		g.intersectHandlers[o.ID] = o.IntersectHandler
+	}
+	return g
+}
+
+func (g *Game) RemoveObject(id id) *Game {
+	delete(g.drawers, id)
+	delete(g.updaters, id)
+	delete(g.intersects, id)
+	delete(g.intersectHandlers, id)
+	return g
+}
+
 func NewGame() *Game {
 	player, err := NewPlayer()
-	cursor := NewCursor()
-
 	if err != nil {
 		panic(err)
 	}
+	cursor := NewCursor()
 
-	return &Game{
-		player:     player,
-		drawers:    []trait.Drawer{player, cursor},
-		updaters:   []trait.Updater{player, cursor},
-		intersects: []trait.Intersector{player.Intersector, cursor.Intersector},
-		intersectHandlers: map[trait.Intersector]trait.IntersectHandler{
-			player.Intersector: player,
-		},
-	}
+	game := (&Game{
+		player:            player,
+		drawers:           make(map[id]trait.Drawer),
+		updaters:          make(map[id]trait.Updater),
+		intersects:        make(map[id]trait.Intersector),
+		intersectHandlers: make(map[id]trait.IntersectHandler),
+	}).
+		AddObject(new().
+			WithUpdater(player).
+			WithDrawer(player).
+			WithIntersector(player.Intersector).
+			WithIntersectHandler(player)).
+		AddObject(new().
+			WithUpdater(cursor).
+			WithDrawer(cursor).
+			WithIntersector(cursor.Intersector))
+
+	return game
 }
