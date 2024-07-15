@@ -32,6 +32,7 @@ func NewBuilt() *Built {
 	}
 
 	transform := trait.NewTransform()
+	transform.Scale = transform.Scale.MulScalar(0.2)
 
 	return &Built{
 		Sprite:      trait.NewSprite(builtImage).WithTransform(transform),

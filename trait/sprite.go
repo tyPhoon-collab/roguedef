@@ -11,9 +11,9 @@ type Sprite struct {
 
 func (s *Sprite) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Scale(s.Scale.X, s.Scale.Y)
 	op.GeoM.Translate(s.Pos.X, s.Pos.Y)
 	op.GeoM.Rotate(s.Rot)
-	op.GeoM.Scale(s.Scale.X, s.Scale.Y)
 	screen.DrawImage(s.Image, op)
 }
 

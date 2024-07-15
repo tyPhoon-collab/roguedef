@@ -41,6 +41,7 @@ func (g *Game) Update() error {
 func (g *Game) newBuiltObject() *trait.Object {
 	built := NewBuilt()
 
+	built.Velocity.Transform.Pos = g.player.Pos
 	built.Set(Vec2{
 		X: 1,
 		Y: 0,
