@@ -30,9 +30,26 @@ func (g *Game) Update() error {
 
 	g.checkIntersects()
 
-	// if ebiten.IsKeyPressed(ebiten.KeySpace) {}
+	if ebiten.IsKeyPressed(ebiten.KeySpace) {
+		built := g.newBuiltObject()
+		g.AddObject(built)
+	}
 
 	return nil
+}
+
+func (g *Game) newBuiltObject() *trait.Object {
+	built := NewBuilt()
+
+	built.Set(Vec2{
+		X: 1,
+		Y: 0,
+	})
+
+	return new().
+		WithDrawer(built).
+		WithUpdater(built).
+		WithIntersector(built.Intersector)
 }
 
 func (g *Game) checkIntersects() {
@@ -64,6 +81,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, g.player.Pos.String())
 
 	for _, o := range g.drawers {
+		o.Draw(screen)
+	}
+
+	for _, o := range g.intersects {
 		o.Draw(screen)
 	}
 }

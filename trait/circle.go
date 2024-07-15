@@ -10,6 +10,7 @@ import (
 )
 
 type Circle struct {
+	Offset Vec2
 	Radius float64
 
 	*Transform
@@ -26,16 +27,23 @@ func (c *Circle) Intersects(other Intersector) bool {
 }
 
 func (c *Circle) IntersectsCircle(other *Circle) bool {
-	return c.Pos.Sub(other.Pos).Len() < c.Radius+other.Radius
+	center := c.Center()
+	otherCenter := other.Center()
+	return center.Sub(otherCenter).Len() < c.Radius+other.Radius
 }
 
 func (c *Circle) Trans() *Transform {
 	return c.Transform
 }
 
+func (c *Circle) Center() Vec2 {
+	return c.Pos.Add(c.Offset)
+}
+
 func (c *Circle) Draw(screen *ebiten.Image) {
-	x := float32(c.Pos.X)
-	y := float32(c.Pos.Y)
+	center := c.Center()
+	x := float32(center.X)
+	y := float32(center.Y)
 	radius := float32(c.Radius)
 	ebitenVector.StrokeCircle(screen, x, y, radius, 2, color.White, false)
 }
@@ -48,23 +56,32 @@ func (c *Circle) WithTransform(transform *Transform) *Circle {
 	return c
 }
 
+func (c *Circle) WithRadius(radius float64) *Circle {
+	c.Radius = radius
+	return c
+}
+
+func (c *Circle) FromImage(image *ebiten.Image) *Circle {
+	circle := calculateRadiusFromImage(image)
+	center := calculateCenterFromImage(image)
+
+	c.Radius = circle
+	c.Offset = center
+
+	return c
+}
+
 func calculateRadiusFromImage(image *ebiten.Image) float64 {
 	return float64(image.Bounds().Dx()) / 2
 }
 
-func NewCircle(radius float64) *Circle {
-	return (&Circle{
-		Radius: radius,
-	}).WithTransform(nil)
+func calculateCenterFromImage(image *ebiten.Image) Vec2 {
+	return Vec2{
+		X: float64(image.Bounds().Dx()) / 2,
+		Y: float64(image.Bounds().Dy()) / 2,
+	}
 }
 
-func NewCircleFromImage(image *ebiten.Image) *Circle {
-	circle := NewCircle(calculateRadiusFromImage(image))
-
-	x := float64(image.Bounds().Dx()) / 2
-	y := float64(image.Bounds().Dy()) / 2
-
-	circle.Move(Vec2{X: x, Y: y})
-
-	return circle
+func NewCircle() *Circle {
+	return (&Circle{}).WithTransform(nil)
 }

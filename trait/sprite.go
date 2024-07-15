@@ -17,16 +17,16 @@ func (s *Sprite) Draw(screen *ebiten.Image) {
 	screen.DrawImage(s.Image, op)
 }
 
-func NewSprite(image *ebiten.Image) *Sprite {
-	return NewSpriteWithTransform(image, nil)
-}
-
-func NewSpriteWithTransform(image *ebiten.Image, transform *Transform) *Sprite {
+func (s *Sprite) WithTransform(transform *Transform) *Sprite {
 	if transform == nil {
 		transform = NewTransform()
 	}
-	return &Sprite{
-		Image:     image,
-		Transform: transform,
-	}
+	s.Transform = transform
+	return s
+}
+
+func NewSprite(image *ebiten.Image) *Sprite {
+	return (&Sprite{
+		Image: image,
+	}).WithTransform(nil)
 }

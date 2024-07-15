@@ -23,6 +23,6 @@ func (p *Cursor) Draw(screen *ebiten.Image) {
 
 func NewCursor() *Cursor {
 	return &Cursor{
-		Intersector: trait.NewCircle(5),
+		Intersector: trait.NewCircle().WithRadius(5),
 	}
 }

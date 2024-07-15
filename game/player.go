@@ -15,7 +15,6 @@ type Vec2 = vector.Vec2
 type Player struct {
 	*trait.Sprite
 	trait.Intersector
-	trait.Object
 }
 
 func (p *Player) Update() {
@@ -51,7 +50,6 @@ func (p *Player) OnIntersect(other trait.Intersector) {
 
 func (p *Player) Draw(screen *ebiten.Image) {
 	p.Sprite.Draw(screen)
-	p.Intersector.Draw(screen)
 }
 
 func (p *Player) String() string {
@@ -67,13 +65,8 @@ func NewPlayer() (*Player, error) {
 
 	transform := trait.NewTransform()
 
-	sprite := trait.NewSpriteWithTransform(playerImage, transform)
-	circle := trait.NewCircleFromImage(playerImage)
-
-	circle.Move(transform.Pos)
-
 	return &Player{
-		Sprite:      sprite,
-		Intersector: circle,
+		Sprite:      trait.NewSprite(playerImage).WithTransform(transform),
+		Intersector: trait.NewCircle().WithTransform(transform).FromImage(playerImage),
 	}, nil
 }
