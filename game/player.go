@@ -11,9 +11,7 @@ import (
 type Vec2 = vector.Vec2
 
 type Player struct {
-	image *ebiten.Image
-
-	trait.HasPosition
+	*trait.Sprite
 }
 
 func (p *Player) Update() {
@@ -38,10 +36,7 @@ func (p *Player) Update() {
 }
 
 func (p *Player) Draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-
-	op.GeoM.Translate(p.Pos.X, p.Pos.Y)
-	screen.DrawImage(p.image, op)
+	p.Sprite.Draw(screen)
 }
 
 func NewPlayer() (*Player, error) {
@@ -52,6 +47,6 @@ func NewPlayer() (*Player, error) {
 	}
 
 	return &Player{
-		image: playerImage,
+		Sprite: trait.NewSprite(playerImage),
 	}, nil
 }
