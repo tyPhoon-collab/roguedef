@@ -14,7 +14,7 @@ type Vec2 = vector.Vec2
 
 type Player struct {
 	*trait.Sprite
-	trait.Intersector
+	intersect trait.Intersector
 }
 
 func (p *Player) Update() {
@@ -40,7 +40,7 @@ func (p *Player) move(dir Vec2) {
 	if dir, err := dir.DivScalar(10); err == nil {
 		delta := dir.MulScalar(10)
 		p.Move(delta)
-		p.Intersector.Trans().Move(delta)
+		p.intersect.Trans().Move(delta)
 	}
 }
 
@@ -68,7 +68,7 @@ func NewPlayer(pos Vec2) (*Player, error) {
 	transform.MoveTo(pos)
 
 	return &Player{
-		Sprite:      trait.NewSprite(playerImage).WithTransform(transform),
-		Intersector: trait.NewCircle().WithTransform(transform).FromImage(playerImage),
+		Sprite:    trait.NewSprite(playerImage).WithTransform(transform),
+		intersect: trait.NewCircle().WithTransform(transform).FromImage(playerImage),
 	}, nil
 }

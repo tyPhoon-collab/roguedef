@@ -81,7 +81,7 @@ func (g *Game) newBulletObject() *trait.Object {
 	return new().
 		WithDrawer(bullet).
 		WithUpdater(bullet).
-		WithIntersector(bullet.Intersector)
+		WithIntersector(bullet.intersect)
 }
 
 func (g *Game) checkIntersects() {
@@ -169,13 +169,13 @@ func NewGame() *Game {
 	game.AddObject(new().
 		WithUpdater(player).
 		WithDrawer(player).
-		WithIntersector(player.Intersector).
+		WithIntersector(player.intersect).
 		WithIntersectHandler(player))
 
 	game.AddObject(new().
 		WithUpdater(cursor).
 		WithDrawer(cursor).
-		WithIntersector(cursor.Intersector))
+		WithIntersector(cursor.intersect))
 
 	game.AddObject(new().
 		WithUpdater(debug).

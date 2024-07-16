@@ -11,7 +11,7 @@ type Bullet struct {
 	*trait.Sprite
 	*trait.Velocity
 
-	trait.Intersector
+	intersect trait.Intersector
 }
 
 func (b *Bullet) Update() {
@@ -35,8 +35,8 @@ func NewBullet() *Bullet {
 	transform.Scale = transform.Scale.MulScalar(0.2)
 
 	return &Bullet{
-		Sprite:      trait.NewSprite(bulletImage).WithTransform(transform),
-		Velocity:    trait.NewVelocity().WithTransform(transform),
-		Intersector: trait.NewCircle().WithTransform(transform).FromImage(bulletImage),
+		Sprite:    trait.NewSprite(bulletImage).WithTransform(transform),
+		Velocity:  trait.NewVelocity().WithTransform(transform),
+		intersect: trait.NewCircle().WithTransform(transform).FromImage(bulletImage),
 	}
 }
