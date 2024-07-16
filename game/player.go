@@ -56,7 +56,7 @@ func (p *Player) String() string {
 	return "Player: " + p.Pos.String()
 }
 
-func NewPlayer() (*Player, error) {
+func NewPlayer(pos Vec2) (*Player, error) {
 	playerImage, _, err := ebitenutil.NewImageFromFile("resources/images/gopher.png")
 
 	if err != nil {
@@ -64,6 +64,8 @@ func NewPlayer() (*Player, error) {
 	}
 
 	transform := trait.NewTransform()
+
+	transform.MoveTo(pos)
 
 	return &Player{
 		Sprite:      trait.NewSprite(playerImage).WithTransform(transform),

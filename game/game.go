@@ -1,7 +1,9 @@
 package game
 
 import (
+	"roguedef/task"
 	"roguedef/trait"
+	"slices"
 
 	"github.com/google/uuid"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -22,9 +24,13 @@ type Game struct {
 	updaters          map[id]trait.Updater
 	intersects        map[id]trait.Intersector
 	intersectHandlers map[id]trait.IntersectHandler
+	taskQueue         []task.Task
+	frameCount        int
 }
 
 func (g *Game) Update() error {
+	g.executeTask()
+
 	for _, o := range g.updaters {
 		o.Update()
 	}
@@ -34,19 +40,43 @@ func (g *Game) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 		bullet := g.newBulletObject()
 		g.AddObject(bullet)
+		g.addTask(task.NewTask(g.frameCount+ebiten.TPS()*3, func() error {
+			g.RemoveObject(bullet.ID)
+			return nil
+		}))
 	}
 
+	g.frameCount++
+
 	return nil
+}
+
+func (g *Game) executeTask() {
+	if len(g.taskQueue) > 0 {
+		t := g.taskQueue[0]
+		if t.ShouldExecute(g.frameCount) {
+			t.Execute()
+			g.taskQueue = g.taskQueue[1:]
+			g.executeTask() // recursion
+		}
+	}
+}
+
+func (g *Game) addTask(t task.Task) {
+	for i := 0; i < len(g.taskQueue); i++ {
+		if g.taskQueue[i].At() > t.At() {
+			g.taskQueue = slices.Insert(g.taskQueue, i, t)
+			return
+		}
+	}
+	g.taskQueue = append(g.taskQueue, t)
 }
 
 func (g *Game) newBulletObject() *trait.Object {
 	bullet := NewBullet()
 
 	bullet.Velocity.Transform.Pos = g.player.Pos
-	bullet.Set(Vec2{
-		X: 1,
-		Y: 0,
-	})
+	bullet.Set(Vec2{X: 0, Y: -10})
 
 	return new().
 		WithDrawer(bullet).
@@ -92,7 +122,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return 320, 240
+	return 320, 640
 }
 
 func (g *Game) AddObject(o *trait.Object) *Game {
@@ -123,7 +153,7 @@ func (g *Game) RemoveObject(id id) *Game {
 }
 
 func NewGame() *Game {
-	player, err := NewPlayer()
+	player, err := NewPlayer(Vec2{X: 136, Y: 550})
 	if err != nil {
 		panic(err)
 	}
@@ -135,6 +165,7 @@ func NewGame() *Game {
 		updaters:          make(map[id]trait.Updater),
 		intersects:        make(map[id]trait.Intersector),
 		intersectHandlers: make(map[id]trait.IntersectHandler),
+		taskQueue:         make([]task.Task, 0),
 	}).
 		AddObject(new().
 			WithUpdater(player).
