@@ -1,4 +1,4 @@
-package game
+package object
 
 import (
 	"roguedef/system"
@@ -12,7 +12,9 @@ type Debug struct {
 	game           *Game
 }
 
-func (d *Debug) Register(o *system.Object) {}
+func (d *Debug) Register(g *Game, o *system.Object) {
+	d.game = g
+}
 
 func (d *Debug) Update() {
 	if inpututil.IsKeyJustPressed(ebiten.KeyI) {
@@ -22,14 +24,12 @@ func (d *Debug) Update() {
 
 func (d *Debug) Draw(screen *ebiten.Image) {
 	if d.showIntersects {
-		for _, o := range d.game.intersects {
+		for _, o := range d.game.Intersects() {
 			o.Draw(screen)
 		}
 	}
 }
 
-func NewDebug(game *Game) *Debug {
-	return &Debug{
-		game: game,
-	}
+func NewDebug() *Debug {
+	return &Debug{}
 }

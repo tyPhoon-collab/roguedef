@@ -1,4 +1,4 @@
-package game
+package object
 
 import (
 	"roguedef/system"
@@ -14,7 +14,7 @@ type Bullet struct {
 	intersect system.Intersector
 }
 
-func (b *Bullet) Register(o *system.Object) {}
+func (b *Bullet) Register(g *Game, o *system.Object) {}
 
 func (b *Bullet) Update() {
 	b.velocity.Update()

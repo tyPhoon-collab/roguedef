@@ -1,4 +1,4 @@
-package game
+package object
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
@@ -13,7 +13,7 @@ type Player struct {
 	intersect system.Intersector
 }
 
-func (p *Player) Register(o *system.Object) {}
+func (p *Player) Register(g *Game, o *system.Object) {}
 
 func (p *Player) Intersect() system.Intersector {
 	return p.intersect
@@ -58,11 +58,11 @@ func (p *Player) String() string {
 	return "Player: " + p.Pos.String()
 }
 
-func NewPlayer(pos Vec2) (*Player, error) {
+func NewPlayer(pos Vec2) *Player {
 	playerImage, _, err := ebitenutil.NewImageFromFile("resources/images/gopher.png")
 
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	transform := system.NewTransform()
@@ -73,5 +73,5 @@ func NewPlayer(pos Vec2) (*Player, error) {
 		Transform: transform,
 		sprite:    system.NewSprite(playerImage).WithTransform(transform),
 		intersect: system.NewCircle().WithTransform(transform).FromImage(playerImage),
-	}, nil
+	}
 }

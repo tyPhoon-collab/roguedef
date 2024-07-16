@@ -23,7 +23,7 @@ type Object struct {
 }
 
 type Data interface {
-	Register(obj *Object)
+	Register(game *Game, obj *Object)
 }
 
 func (o *Object) WithUpdater(updater Updater) *Object {

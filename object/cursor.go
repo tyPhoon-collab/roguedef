@@ -1,4 +1,4 @@
-package game
+package object
 
 import (
 	"roguedef/system"
@@ -11,7 +11,7 @@ type Cursor struct {
 	intersect system.Intersector
 }
 
-func (p *Cursor) Register(o *system.Object) {}
+func (p *Cursor) Register(g *Game, o *system.Object) {}
 
 func (p *Cursor) Update() {
 	x, y := ebiten.CursorPosition()

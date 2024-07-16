@@ -1,28 +1,32 @@
-package game
+package system
 
 import (
-	"roguedef/system"
 	"roguedef/task"
 	"slices"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type iD = uuid.UUID
 
 type Game struct {
-	player            *Player
-	objects           map[iD]*system.Object
-	drawers           map[iD]system.Drawer
-	updaters          map[iD]system.Updater
-	intersects        map[iD]system.Intersector
-	intersectHandlers map[iD]system.IntersectHandler
+	objects           map[iD]*Object
+	drawers           map[iD]Drawer
+	updaters          map[iD]Updater
+	intersects        map[iD]Intersector
+	intersectHandlers map[iD]IntersectHandler
 	taskQueue         []task.Task
 	frameCount        int
+}
+
+func (g *Game) FrameCount() int {
+	return g.frameCount
+}
+
+func (g *Game) Intersects() map[iD]Intersector {
+	return g.intersects
 }
 
 func (g *Game) Update() error {
@@ -33,10 +37,6 @@ func (g *Game) Update() error {
 	}
 
 	g.checkIntersects()
-
-	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-		g.spawnBullet()
-	}
 
 	g.frameCount++
 
@@ -54,22 +54,9 @@ func (g *Game) executeTask() {
 	}
 }
 
-func (g *Game) spawnBullet() {
-	bullet := NewBullet(Vec2{X: 0, Y: -10})
-
-	bullet.Pos = g.player.Pos
-
-	obj := g.AddObjectWithData(bullet)
-
-	g.AddTaskAfter(3*time.Second, func() error {
-		g.RemoveObject(obj.ID)
-		return nil
-	})
-}
-
 func (g *Game) checkIntersects() {
 	keys := make([]iD, 0, len(g.intersects))
-	values := make([]system.Intersector, 0, len(g.intersects))
+	values := make([]Intersector, 0, len(g.intersects))
 
 	for k, v := range g.intersects {
 		keys = append(keys, k)
@@ -93,8 +80,6 @@ func (g *Game) checkIntersects() {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, g.player.Pos.String())
-
 	for _, o := range g.drawers {
 		o.Draw(screen)
 	}
@@ -104,7 +89,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return 320, 640
 }
 
-func (g *Game) AddObject(o *system.Object) {
+func (g *Game) AddObject(o *Object) {
 	g.objects[o.ID] = o
 
 	if o.Drawer != nil {
@@ -124,10 +109,10 @@ func (g *Game) AddObject(o *system.Object) {
 	}
 }
 
-func (g *Game) AddObjectWithData(data system.Data) *system.Object {
-	obj := system.NewObjectWithData(data)
+func (g *Game) AddObjectWithData(data Data) *Object {
+	obj := NewObjectWithData(data)
 	g.AddObject(obj)
-	data.Register(obj)
+	data.Register(g, obj)
 
 	return obj
 }
@@ -156,29 +141,14 @@ func (g *Game) AddTaskAfter(after time.Duration, do func() error) {
 }
 
 func NewGame() *Game {
-	player, err := NewPlayer(Vec2{X: 136, Y: 550})
-	if err != nil {
-		panic(err)
-	}
-	cursor := NewCursor()
-
 	game := &Game{
-		player:            player,
-		objects:           make(map[iD]*system.Object),
-		drawers:           make(map[iD]system.Drawer),
-		updaters:          make(map[iD]system.Updater),
-		intersects:        make(map[iD]system.Intersector),
-		intersectHandlers: make(map[iD]system.IntersectHandler),
+		objects:           make(map[iD]*Object),
+		drawers:           make(map[iD]Drawer),
+		updaters:          make(map[iD]Updater),
+		intersects:        make(map[iD]Intersector),
+		intersectHandlers: make(map[iD]IntersectHandler),
 		taskQueue:         make([]task.Task, 0),
 	}
-
-	debug := NewDebug(game)
-	enemySpawner := NewEnemySpawner(game)
-
-	game.AddObjectWithData(player)
-	game.AddObjectWithData(cursor)
-	game.AddObjectWithData(debug)
-	game.AddObjectWithData(enemySpawner)
 
 	return game
 }

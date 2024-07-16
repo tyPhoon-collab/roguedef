@@ -1,4 +1,4 @@
-package game
+package object
 
 import (
 	"roguedef/system"
@@ -16,7 +16,8 @@ type Enemy struct {
 	intersect system.Intersector
 }
 
-func (e *Enemy) Register(o *system.Object) {
+func (e *Enemy) Register(g *Game, o *system.Object) {
+	e.game = g
 	e.object = o
 }
 
@@ -39,7 +40,7 @@ func (e *Enemy) OnIntersect(other *system.Object) {
 	}
 }
 
-func NewEnemy(game *Game) *Enemy {
+func NewEnemy() *Enemy {
 	enemyImage, _, err := ebitenutil.NewImageFromFile("resources/images/gopher.png")
 	if err != nil {
 		panic(err)
@@ -49,7 +50,6 @@ func NewEnemy(game *Game) *Enemy {
 
 	return &Enemy{
 		Transform: transform,
-		game:      game,
 		sprite:    system.NewSprite(enemyImage).WithTransform(transform),
 		velocity:  system.NewVelocity().WithTransform(transform).With(Vec2{X: 0, Y: 1}),
 		intersect: system.NewCircle().WithTransform(transform).FromImage(enemyImage),

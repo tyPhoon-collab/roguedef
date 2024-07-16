@@ -1,4 +1,4 @@
-package game
+package object
 
 import (
 	"roguedef/system"
@@ -10,16 +10,18 @@ type EnemySpawner struct {
 	spawnRange Rect
 }
 
-func (s *EnemySpawner) Register(o *system.Object) {}
+func (s *EnemySpawner) Register(g *Game, o *system.Object) {
+	s.game = g
+}
 
 func (s *EnemySpawner) Update() {
-	if s.game.frameCount%60 == 0 {
+	if s.game.FrameCount()%60 == 0 {
 		s.spawnEnemy()
 	}
 }
 
 func (s *EnemySpawner) spawnEnemy() {
-	enemy := NewEnemy(s.game)
+	enemy := NewEnemy()
 	enemy.Pos = s.spawnRange.RandomPoint()
 
 	obj := s.game.AddObjectWithData(enemy)
@@ -29,8 +31,6 @@ func (s *EnemySpawner) spawnEnemy() {
 	})
 }
 
-func NewEnemySpawner(game *Game) *EnemySpawner {
-	return &EnemySpawner{
-		game: game,
-	}
+func NewEnemySpawner() *EnemySpawner {
+	return &EnemySpawner{}
 }
