@@ -3,11 +3,14 @@ package main
 import (
 	"log"
 	"roguedef/object"
+	"roguedef/rect"
 	"roguedef/system"
 	"roguedef/vector"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
+
+type Vec2 = vector.Vec2
 
 func main() {
 	ebiten.SetWindowSize(320, 640)
@@ -15,11 +18,14 @@ func main() {
 
 	game := system.NewGame()
 
-	player := object.NewPlayer(vector.Vec2{X: 136, Y: 550})
+	player := object.NewPlayer(Vec2{X: 136, Y: 550})
 	cursor := object.NewCursor()
 	debug := object.NewDebug()
 	bulletSpawner := object.NewBulletSpawner(player)
-	enemySpawner := object.NewEnemySpawner()
+	enemySpawner := object.NewEnemySpawner(rect.Rect{
+		Min: Vec2{X: 0, Y: 0},
+		Max: Vec2{X: 300, Y: 10},
+	})
 
 	game.AddObjectWithData(bulletSpawner)
 	game.AddObjectWithData(player)

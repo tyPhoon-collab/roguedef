@@ -9,12 +9,17 @@ import (
 
 type Bullet struct {
 	*system.Transform
+	game      *Game
+	object    *system.Object
 	sprite    *system.Sprite
 	velocity  *system.Velocity
 	intersect system.Intersector
 }
 
-func (b *Bullet) Register(g *Game, o *system.Object) {}
+func (b *Bullet) Register(g *Game, o *system.Object) {
+	b.game = g
+	b.object = o
+}
 
 func (b *Bullet) Update() {
 	b.velocity.Update()
@@ -26,6 +31,12 @@ func (b *Bullet) Draw(screen *ebiten.Image) {
 
 func (b *Bullet) Intersect() system.Intersector {
 	return b.intersect
+}
+
+func (b *Bullet) OnIntersect(other *system.Object) {
+	if _, ok := other.Data.(*Enemy); ok {
+		b.game.RemoveObject(b.object.ID)
+	}
 }
 
 func NewBullet(vel Vec2) *Bullet {

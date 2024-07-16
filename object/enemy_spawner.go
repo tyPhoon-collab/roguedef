@@ -31,6 +31,8 @@ func (s *EnemySpawner) spawnEnemy() {
 	})
 }
 
-func NewEnemySpawner() *EnemySpawner {
-	return &EnemySpawner{}
+func NewEnemySpawner(spawnRange Rect) *EnemySpawner {
+	return &EnemySpawner{
+		spawnRange: spawnRange,
+	}
 }

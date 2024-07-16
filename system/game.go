@@ -47,7 +47,10 @@ func (g *Game) executeTask() {
 	if len(g.taskQueue) > 0 {
 		t := g.taskQueue[0]
 		if t.ShouldExecute(g.frameCount) {
-			t.Execute()
+			err := t.Execute()
+			if err != nil {
+				panic(err)
+			}
 			g.taskQueue = g.taskQueue[1:]
 			g.executeTask() // recursion
 		}
@@ -117,13 +120,16 @@ func (g *Game) AddObjectWithData(data Data) *Object {
 	return obj
 }
 
-func (g *Game) RemoveObject(id iD) *Game {
-	delete(g.objects, id)
-	delete(g.drawers, id)
-	delete(g.updaters, id)
-	delete(g.intersects, id)
-	delete(g.intersectHandlers, id)
-	return g
+func (g *Game) RemoveObject(id iD) {
+	g.AddTaskPostFrame(func() error {
+		delete(g.objects, id)
+		delete(g.drawers, id)
+		delete(g.updaters, id)
+		delete(g.intersects, id)
+		delete(g.intersectHandlers, id)
+
+		return nil
+	})
 }
 
 func (g *Game) AddTask(t task.Task) {
@@ -134,6 +140,9 @@ func (g *Game) AddTask(t task.Task) {
 		}
 	}
 	g.taskQueue = append(g.taskQueue, t)
+}
+func (g *Game) AddTaskPostFrame(do func() error) {
+	g.AddTask(task.NewTask(g.frameCount, do))
 }
 func (g *Game) AddTaskAfter(after time.Duration, do func() error) {
 	delayFrameCount := float64(ebiten.TPS()) * after.Seconds()
