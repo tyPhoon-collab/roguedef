@@ -1,4 +1,4 @@
-package trait
+package system
 
 import (
 	"github.com/google/uuid"
@@ -15,11 +15,15 @@ type Updater interface {
 
 type Object struct {
 	ID   uuid.UUID
-	Data any // you can set any data
+	Data Data
 	Updater
 	Drawer
 	Intersector
 	IntersectHandler
+}
+
+type Data interface {
+	Register(obj *Object)
 }
 
 func (o *Object) WithUpdater(updater Updater) *Object {
@@ -48,7 +52,7 @@ func NewObject() *Object {
 	}
 }
 
-func NewObjectWithData(data any) *Object {
+func NewObjectWithData(data Data) *Object {
 	obj := NewObject()
 	obj.Data = data
 	if o, ok := data.(Drawer); ok {

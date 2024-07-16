@@ -1,20 +1,26 @@
 package game
 
 import (
-	"roguedef/trait"
+	"roguedef/system"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type Enemy struct {
-	*trait.Transform
-	sprite    *trait.Sprite
-	velocity  *trait.Velocity
-	intersect trait.Intersector
+	*system.Transform
+	game      *Game
+	object    *system.Object
+	sprite    *system.Sprite
+	velocity  *system.Velocity
+	intersect system.Intersector
 }
 
-func (e *Enemy) Intersect() trait.Intersector {
+func (e *Enemy) Register(o *system.Object) {
+	e.object = o
+}
+
+func (e *Enemy) Intersect() system.Intersector {
 	return e.intersect
 }
 
@@ -27,18 +33,25 @@ func (e *Enemy) Draw(screen *ebiten.Image) {
 	e.sprite.Draw(screen)
 }
 
-func NewEnemy() *Enemy {
+func (e *Enemy) OnIntersect(other *system.Object) {
+	if _, ok := other.Data.(*Bullet); ok {
+		e.game.RemoveObject(e.object.ID)
+	}
+}
+
+func NewEnemy(game *Game) *Enemy {
 	enemyImage, _, err := ebitenutil.NewImageFromFile("resources/images/gopher.png")
 	if err != nil {
 		panic(err)
 	}
-	transform := trait.NewTransform()
+	transform := system.NewTransform()
 	transform.Scale = transform.Scale.MulScalar(0.5)
 
 	return &Enemy{
 		Transform: transform,
-		sprite:    trait.NewSprite(enemyImage).WithTransform(transform),
-		velocity:  trait.NewVelocity().WithTransform(transform).With(Vec2{X: 0, Y: 1}),
-		intersect: trait.NewCircle().WithTransform(transform).FromImage(enemyImage),
+		game:      game,
+		sprite:    system.NewSprite(enemyImage).WithTransform(transform),
+		velocity:  system.NewVelocity().WithTransform(transform).With(Vec2{X: 0, Y: 1}),
+		intersect: system.NewCircle().WithTransform(transform).FromImage(enemyImage),
 	}
 }

@@ -1,6 +1,8 @@
 package game
 
 import (
+	"roguedef/system"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
@@ -9,6 +11,8 @@ type Debug struct {
 	showIntersects bool
 	game           *Game
 }
+
+func (d *Debug) Register(o *system.Object) {}
 
 func (d *Debug) Update() {
 	if inpututil.IsKeyJustPressed(ebiten.KeyI) {

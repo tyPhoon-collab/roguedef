@@ -1,4 +1,4 @@
-package trait
+package system
 
 import (
 	"fmt"

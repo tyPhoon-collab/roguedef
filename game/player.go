@@ -1,24 +1,21 @@
 package game
 
 import (
-	"fmt"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 
-	"roguedef/trait"
-	"roguedef/vector"
+	"roguedef/system"
 )
 
-type Vec2 = vector.Vec2
-
 type Player struct {
-	*trait.Transform
-	sprite    *trait.Sprite
-	intersect trait.Intersector
+	*system.Transform
+	sprite    *system.Sprite
+	intersect system.Intersector
 }
 
-func (p *Player) Intersect() trait.Intersector {
+func (p *Player) Register(o *system.Object) {}
+
+func (p *Player) Intersect() system.Intersector {
 	return p.intersect
 }
 
@@ -49,8 +46,8 @@ func (p *Player) move(dir Vec2) {
 	}
 }
 
-func (p *Player) OnIntersect(other *trait.Object) {
-	fmt.Println("Intersect. Me:", p, " Other:", other)
+func (p *Player) OnIntersect(other *system.Object) {
+	// fmt.Println("Intersect. Me:", p, " Other:", other)
 }
 
 func (p *Player) Draw(screen *ebiten.Image) {
@@ -68,13 +65,13 @@ func NewPlayer(pos Vec2) (*Player, error) {
 		return nil, err
 	}
 
-	transform := trait.NewTransform()
+	transform := system.NewTransform()
 
 	transform.MoveTo(pos)
 
 	return &Player{
 		Transform: transform,
-		sprite:    trait.NewSprite(playerImage).WithTransform(transform),
-		intersect: trait.NewCircle().WithTransform(transform).FromImage(playerImage),
+		sprite:    system.NewSprite(playerImage).WithTransform(transform),
+		intersect: system.NewCircle().WithTransform(transform).FromImage(playerImage),
 	}, nil
 }

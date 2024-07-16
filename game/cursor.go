@@ -1,15 +1,17 @@
 package game
 
 import (
-	"roguedef/trait"
+	"roguedef/system"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Cursor struct {
-	*trait.Transform
-	intersect trait.Intersector
+	*system.Transform
+	intersect system.Intersector
 }
+
+func (p *Cursor) Register(o *system.Object) {}
 
 func (p *Cursor) Update() {
 	x, y := ebiten.CursorPosition()
@@ -21,14 +23,14 @@ func (p *Cursor) Draw(screen *ebiten.Image) {
 	p.intersect.Draw(screen)
 }
 
-func (p *Cursor) Intersect() trait.Intersector {
+func (p *Cursor) Intersect() system.Intersector {
 	return p.intersect
 }
 
 func NewCursor() *Cursor {
-	transform := trait.NewTransform()
+	transform := system.NewTransform()
 	return &Cursor{
 		Transform: transform,
-		intersect: trait.NewCircle().WithTransform(transform).WithRadius(5),
+		intersect: system.NewCircle().WithTransform(transform).WithRadius(5),
 	}
 }

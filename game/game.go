@@ -1,8 +1,8 @@
 package game
 
 import (
+	"roguedef/system"
 	"roguedef/task"
-	"roguedef/trait"
 	"slices"
 	"time"
 
@@ -16,11 +16,11 @@ type iD = uuid.UUID
 
 type Game struct {
 	player            *Player
-	objects           map[iD]*trait.Object
-	drawers           map[iD]trait.Drawer
-	updaters          map[iD]trait.Updater
-	intersects        map[iD]trait.Intersector
-	intersectHandlers map[iD]trait.IntersectHandler
+	objects           map[iD]*system.Object
+	drawers           map[iD]system.Drawer
+	updaters          map[iD]system.Updater
+	intersects        map[iD]system.Intersector
+	intersectHandlers map[iD]system.IntersectHandler
 	taskQueue         []task.Task
 	frameCount        int
 }
@@ -69,7 +69,7 @@ func (g *Game) spawnBullet() {
 
 func (g *Game) checkIntersects() {
 	keys := make([]iD, 0, len(g.intersects))
-	values := make([]trait.Intersector, 0, len(g.intersects))
+	values := make([]system.Intersector, 0, len(g.intersects))
 
 	for k, v := range g.intersects {
 		keys = append(keys, k)
@@ -104,7 +104,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return 320, 640
 }
 
-func (g *Game) AddObject(o *trait.Object) {
+func (g *Game) AddObject(o *system.Object) {
 	g.objects[o.ID] = o
 
 	if o.Drawer != nil {
@@ -124,9 +124,10 @@ func (g *Game) AddObject(o *trait.Object) {
 	}
 }
 
-func (g *Game) AddObjectWithData(data any) *trait.Object {
-	obj := trait.NewObjectWithData(data)
+func (g *Game) AddObjectWithData(data system.Data) *system.Object {
+	obj := system.NewObjectWithData(data)
 	g.AddObject(obj)
+	data.Register(obj)
 
 	return obj
 }
@@ -163,11 +164,11 @@ func NewGame() *Game {
 
 	game := &Game{
 		player:            player,
-		objects:           make(map[iD]*trait.Object),
-		drawers:           make(map[iD]trait.Drawer),
-		updaters:          make(map[iD]trait.Updater),
-		intersects:        make(map[iD]trait.Intersector),
-		intersectHandlers: make(map[iD]trait.IntersectHandler),
+		objects:           make(map[iD]*system.Object),
+		drawers:           make(map[iD]system.Drawer),
+		updaters:          make(map[iD]system.Updater),
+		intersects:        make(map[iD]system.Intersector),
+		intersectHandlers: make(map[iD]system.IntersectHandler),
 		taskQueue:         make([]task.Task, 0),
 	}
 

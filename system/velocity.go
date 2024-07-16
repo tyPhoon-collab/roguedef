@@ -1,4 +1,4 @@
-package trait
+package system
 
 type Velocity struct {
 	Velocity Vec2
