@@ -115,10 +115,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	for _, o := range g.drawers {
 		o.Draw(screen)
 	}
-
-	for _, o := range g.intersects {
-		o.Draw(screen)
-	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
@@ -159,23 +155,31 @@ func NewGame() *Game {
 	}
 	cursor := NewCursor()
 
-	game := (&Game{
+	game := &Game{
 		player:            player,
 		drawers:           make(map[id]trait.Drawer),
 		updaters:          make(map[id]trait.Updater),
 		intersects:        make(map[id]trait.Intersector),
 		intersectHandlers: make(map[id]trait.IntersectHandler),
 		taskQueue:         make([]task.Task, 0),
-	}).
-		AddObject(new().
-			WithUpdater(player).
-			WithDrawer(player).
-			WithIntersector(player.Intersector).
-			WithIntersectHandler(player)).
-		AddObject(new().
-			WithUpdater(cursor).
-			WithDrawer(cursor).
-			WithIntersector(cursor.Intersector))
+	}
+
+	debug := NewDebug(*game)
+
+	game.AddObject(new().
+		WithUpdater(player).
+		WithDrawer(player).
+		WithIntersector(player.Intersector).
+		WithIntersectHandler(player))
+
+	game.AddObject(new().
+		WithUpdater(cursor).
+		WithDrawer(cursor).
+		WithIntersector(cursor.Intersector))
+
+	game.AddObject(new().
+		WithUpdater(debug).
+		WithDrawer(debug))
 
 	return game
 }
