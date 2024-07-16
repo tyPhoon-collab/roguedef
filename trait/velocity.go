@@ -9,8 +9,9 @@ func (v *Velocity) Update() {
 	v.Move(v.Velocity)
 }
 
-func (v *Velocity) Set(velocity Vec2) {
+func (v *Velocity) With(velocity Vec2) *Velocity {
 	v.Velocity = velocity
+	return v
 }
 
 func (v *Velocity) WithTransform(transform *Transform) *Velocity {

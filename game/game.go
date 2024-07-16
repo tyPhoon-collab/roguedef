@@ -4,6 +4,7 @@ import (
 	"roguedef/task"
 	"roguedef/trait"
 	"slices"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -34,12 +35,7 @@ func (g *Game) Update() error {
 	g.checkIntersects()
 
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-		bullet := g.newBulletObject()
-		g.AddObject(bullet)
-		g.addTask(task.NewTask(g.frameCount+ebiten.TPS()*3, func() error {
-			g.RemoveObject(bullet.ID)
-			return nil
-		}))
+		g.spawnBullet()
 	}
 
 	g.frameCount++
@@ -58,23 +54,18 @@ func (g *Game) executeTask() {
 	}
 }
 
-func (g *Game) addTask(t task.Task) {
-	for i := 0; i < len(g.taskQueue); i++ {
-		if g.taskQueue[i].At() > t.At() {
-			g.taskQueue = slices.Insert(g.taskQueue, i, t)
-			return
-		}
-	}
-	g.taskQueue = append(g.taskQueue, t)
-}
-
-func (g *Game) newBulletObject() *trait.Object {
+func (g *Game) spawnBullet() {
 	bullet := NewBullet()
 
 	bullet.Velocity.Transform.Pos = g.player.Pos
-	bullet.Set(Vec2{X: 0, Y: -10})
+	bullet.Velocity.Velocity = Vec2{X: 0, Y: -10}
 
-	return trait.NewObjectWithData(bullet)
+	obj := g.AddObjectWithData(bullet)
+
+	g.AddTaskAfter(3*time.Second, func() error {
+		g.RemoveObject(obj.ID)
+		return nil
+	})
 }
 
 func (g *Game) checkIntersects() {
@@ -114,7 +105,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return 320, 640
 }
 
-func (g *Game) AddObject(o *trait.Object) *Game {
+func (g *Game) AddObject(o *trait.Object) {
 	g.objects[o.ID] = o
 
 	if o.Drawer != nil {
@@ -132,7 +123,13 @@ func (g *Game) AddObject(o *trait.Object) *Game {
 	if o.IntersectHandler != nil {
 		g.intersectHandlers[o.ID] = o.IntersectHandler
 	}
-	return g
+}
+
+func (g *Game) AddObjectWithData(data any) *trait.Object {
+	obj := trait.NewObjectWithData(data)
+	g.AddObject(obj)
+
+	return obj
 }
 
 func (g *Game) RemoveObject(id iD) *Game {
@@ -142,6 +139,20 @@ func (g *Game) RemoveObject(id iD) *Game {
 	delete(g.intersects, id)
 	delete(g.intersectHandlers, id)
 	return g
+}
+
+func (g *Game) AddTask(t task.Task) {
+	for i := 0; i < len(g.taskQueue); i++ {
+		if g.taskQueue[i].At() > t.At() {
+			g.taskQueue = slices.Insert(g.taskQueue, i, t)
+			return
+		}
+	}
+	g.taskQueue = append(g.taskQueue, t)
+}
+func (g *Game) AddTaskAfter(after time.Duration, do func() error) {
+	delayFrameCount := float64(ebiten.TPS()) * after.Seconds()
+	g.AddTask(task.NewTask(g.frameCount+int(delayFrameCount), do))
 }
 
 func NewGame() *Game {
@@ -161,11 +172,13 @@ func NewGame() *Game {
 		taskQueue:         make([]task.Task, 0),
 	}
 
-	debug := NewDebug(*game)
+	debug := NewDebug(game)
+	enemySpawner := NewEnemySpawner(game)
 
-	game.AddObject(trait.NewObjectWithData(player))
-	game.AddObject(trait.NewObjectWithData(cursor))
-	game.AddObject(trait.NewObjectWithData(debug))
+	game.AddObjectWithData(player)
+	game.AddObjectWithData(cursor)
+	game.AddObjectWithData(debug)
+	game.AddObjectWithData(enemySpawner)
 
 	return game
 }

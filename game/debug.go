@@ -7,7 +7,7 @@ import (
 
 type Debug struct {
 	showIntersects bool
-	game           Game
+	game           *Game
 }
 
 func (d *Debug) Update() {
@@ -24,7 +24,7 @@ func (d *Debug) Draw(screen *ebiten.Image) {
 	}
 }
 
-func NewDebug(game Game) *Debug {
+func NewDebug(game *Game) *Debug {
 	return &Debug{
 		game: game,
 	}
