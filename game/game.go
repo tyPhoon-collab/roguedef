@@ -55,10 +55,9 @@ func (g *Game) executeTask() {
 }
 
 func (g *Game) spawnBullet() {
-	bullet := NewBullet()
+	bullet := NewBullet(Vec2{X: 0, Y: -10})
 
-	bullet.Velocity.Transform.Pos = g.player.Pos
-	bullet.Velocity.Velocity = Vec2{X: 0, Y: -10}
+	bullet.Pos = g.player.Pos
 
 	obj := g.AddObjectWithData(bullet)
 

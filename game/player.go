@@ -13,7 +13,8 @@ import (
 type Vec2 = vector.Vec2
 
 type Player struct {
-	*trait.Sprite
+	*trait.Transform
+	sprite    *trait.Sprite
 	intersect trait.Intersector
 }
 
@@ -44,7 +45,7 @@ func (p *Player) move(dir Vec2) {
 	if dir, err := dir.DivScalar(10); err == nil {
 		delta := dir.MulScalar(10)
 		p.Move(delta)
-		p.intersect.Trans().Move(delta)
+		p.Move(delta)
 	}
 }
 
@@ -53,7 +54,7 @@ func (p *Player) OnIntersect(other *trait.Object) {
 }
 
 func (p *Player) Draw(screen *ebiten.Image) {
-	p.Sprite.Draw(screen)
+	p.sprite.Draw(screen)
 }
 
 func (p *Player) String() string {
@@ -72,7 +73,8 @@ func NewPlayer(pos Vec2) (*Player, error) {
 	transform.MoveTo(pos)
 
 	return &Player{
-		Sprite:    trait.NewSprite(playerImage).WithTransform(transform),
+		Transform: transform,
+		sprite:    trait.NewSprite(playerImage).WithTransform(transform),
 		intersect: trait.NewCircle().WithTransform(transform).FromImage(playerImage),
 	}, nil
 }

@@ -8,8 +8,8 @@ import (
 )
 
 type Enemy struct {
-	sprite *trait.Sprite
 	*trait.Transform
+	sprite    *trait.Sprite
 	velocity  *trait.Velocity
 	intersect trait.Intersector
 }

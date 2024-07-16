@@ -7,13 +7,14 @@ import (
 )
 
 type Cursor struct {
+	*trait.Transform
 	intersect trait.Intersector
 }
 
 func (p *Cursor) Update() {
 	x, y := ebiten.CursorPosition()
 
-	p.intersect.Trans().MoveTo(Vec2{X: float64(x), Y: float64(y)})
+	p.MoveTo(Vec2{X: float64(x), Y: float64(y)})
 }
 
 func (p *Cursor) Draw(screen *ebiten.Image) {
@@ -25,7 +26,9 @@ func (p *Cursor) Intersect() trait.Intersector {
 }
 
 func NewCursor() *Cursor {
+	transform := trait.NewTransform()
 	return &Cursor{
-		intersect: trait.NewCircle().WithRadius(5),
+		Transform: transform,
+		intersect: trait.NewCircle().WithTransform(transform).WithRadius(5),
 	}
 }
