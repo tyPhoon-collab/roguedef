@@ -11,19 +11,15 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-// short hand for trait.NewObject()
-func new() *trait.Object {
-	return trait.NewObject()
-}
-
-type id = uuid.UUID
+type iD = uuid.UUID
 
 type Game struct {
 	player            *Player
-	drawers           map[id]trait.Drawer
-	updaters          map[id]trait.Updater
-	intersects        map[id]trait.Intersector
-	intersectHandlers map[id]trait.IntersectHandler
+	objects           map[iD]*trait.Object
+	drawers           map[iD]trait.Drawer
+	updaters          map[iD]trait.Updater
+	intersects        map[iD]trait.Intersector
+	intersectHandlers map[iD]trait.IntersectHandler
 	taskQueue         []task.Task
 	frameCount        int
 }
@@ -78,14 +74,11 @@ func (g *Game) newBulletObject() *trait.Object {
 	bullet.Velocity.Transform.Pos = g.player.Pos
 	bullet.Set(Vec2{X: 0, Y: -10})
 
-	return new().
-		WithDrawer(bullet).
-		WithUpdater(bullet).
-		WithIntersector(bullet.intersect)
+	return trait.NewObjectWithData(bullet)
 }
 
 func (g *Game) checkIntersects() {
-	keys := make([]id, 0, len(g.intersects))
+	keys := make([]iD, 0, len(g.intersects))
 	values := make([]trait.Intersector, 0, len(g.intersects))
 
 	for k, v := range g.intersects {
@@ -95,14 +88,14 @@ func (g *Game) checkIntersects() {
 
 	for i := 0; i < len(g.intersects); i++ {
 		for j := i + 1; j < len(g.intersects); j++ {
-			k1, k2 := keys[i], keys[j]
+			id, otherId := keys[i], keys[j]
 			v1, v2 := values[i], values[j]
 			if v1.Intersects(v2) {
-				if handler, ok := g.intersectHandlers[k2]; ok {
-					handler.OnIntersect(v2)
+				if handler, ok := g.intersectHandlers[otherId]; ok {
+					handler.OnIntersect(g.objects[id])
 				}
-				if handler, ok := g.intersectHandlers[k1]; ok {
-					handler.OnIntersect(v1)
+				if handler, ok := g.intersectHandlers[id]; ok {
+					handler.OnIntersect(g.objects[otherId])
 				}
 			}
 		}
@@ -122,6 +115,8 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func (g *Game) AddObject(o *trait.Object) *Game {
+	g.objects[o.ID] = o
+
 	if o.Drawer != nil {
 		g.drawers[o.ID] = o.Drawer
 	}
@@ -140,7 +135,8 @@ func (g *Game) AddObject(o *trait.Object) *Game {
 	return g
 }
 
-func (g *Game) RemoveObject(id id) *Game {
+func (g *Game) RemoveObject(id iD) *Game {
+	delete(g.objects, id)
 	delete(g.drawers, id)
 	delete(g.updaters, id)
 	delete(g.intersects, id)
@@ -157,19 +153,18 @@ func NewGame() *Game {
 
 	game := &Game{
 		player:            player,
-		drawers:           make(map[id]trait.Drawer),
-		updaters:          make(map[id]trait.Updater),
-		intersects:        make(map[id]trait.Intersector),
-		intersectHandlers: make(map[id]trait.IntersectHandler),
+		objects:           make(map[iD]*trait.Object),
+		drawers:           make(map[iD]trait.Drawer),
+		updaters:          make(map[iD]trait.Updater),
+		intersects:        make(map[iD]trait.Intersector),
+		intersectHandlers: make(map[iD]trait.IntersectHandler),
 		taskQueue:         make([]task.Task, 0),
 	}
 
 	debug := NewDebug(*game)
 
 	game.AddObject(trait.NewObjectWithData(player))
-
 	game.AddObject(trait.NewObjectWithData(cursor))
-
 	game.AddObject(trait.NewObjectWithData(debug))
 
 	return game

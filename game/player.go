@@ -48,7 +48,7 @@ func (p *Player) move(dir Vec2) {
 	}
 }
 
-func (p *Player) OnIntersect(other trait.Intersector) {
+func (p *Player) OnIntersect(other *trait.Object) {
 	fmt.Println("Intersect. Me:", p, " Other:", other)
 }
 

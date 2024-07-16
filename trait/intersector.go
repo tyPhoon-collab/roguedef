@@ -9,7 +9,7 @@ type Intersector interface {
 }
 
 type IntersectHandler interface {
-	OnIntersect(other Intersector)
+	OnIntersect(other *Object)
 }
 
 type IntersectHolder interface {
