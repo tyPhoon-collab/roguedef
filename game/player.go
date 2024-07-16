@@ -17,6 +17,10 @@ type Player struct {
 	intersect trait.Intersector
 }
 
+func (p *Player) Intersect() trait.Intersector {
+	return p.intersect
+}
+
 func (p *Player) Update() {
 	dir := Vec2{}
 

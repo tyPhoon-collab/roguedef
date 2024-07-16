@@ -166,20 +166,11 @@ func NewGame() *Game {
 
 	debug := NewDebug(*game)
 
-	game.AddObject(new().
-		WithUpdater(player).
-		WithDrawer(player).
-		WithIntersector(player.intersect).
-		WithIntersectHandler(player))
+	game.AddObject(trait.NewObjectWithData(player))
 
-	game.AddObject(new().
-		WithUpdater(cursor).
-		WithDrawer(cursor).
-		WithIntersector(cursor.intersect))
+	game.AddObject(trait.NewObjectWithData(cursor))
 
-	game.AddObject(new().
-		WithUpdater(debug).
-		WithDrawer(debug))
+	game.AddObject(trait.NewObjectWithData(debug))
 
 	return game
 }

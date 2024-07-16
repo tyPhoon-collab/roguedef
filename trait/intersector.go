@@ -11,3 +11,7 @@ type Intersector interface {
 type IntersectHandler interface {
 	OnIntersect(other Intersector)
 }
+
+type IntersectHolder interface {
+	Intersect() Intersector
+}

@@ -20,6 +20,10 @@ func (p *Cursor) Draw(screen *ebiten.Image) {
 	p.intersect.Draw(screen)
 }
 
+func (p *Cursor) Intersect() trait.Intersector {
+	return p.intersect
+}
+
 func NewCursor() *Cursor {
 	return &Cursor{
 		intersect: trait.NewCircle().WithRadius(5),

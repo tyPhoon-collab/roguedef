@@ -14,7 +14,8 @@ type Updater interface {
 }
 
 type Object struct {
-	ID uuid.UUID
+	ID   uuid.UUID
+	Data any // you can set any data
 	Updater
 	Drawer
 	Intersector
@@ -45,4 +46,22 @@ func NewObject() *Object {
 	return &Object{
 		ID: uuid.New(),
 	}
+}
+
+func NewObjectWithData(data any) *Object {
+	obj := NewObject()
+	obj.Data = data
+	if o, ok := data.(Drawer); ok {
+		obj.Drawer = o
+	}
+	if o, ok := data.(Updater); ok {
+		obj.Updater = o
+	}
+	if o, ok := data.(IntersectHolder); ok {
+		obj.Intersector = o.Intersect()
+	}
+	if o, ok := data.(IntersectHandler); ok {
+		obj.IntersectHandler = o
+	}
+	return obj
 }

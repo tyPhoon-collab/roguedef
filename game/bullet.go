@@ -24,6 +24,10 @@ func (b *Bullet) Draw(screen *ebiten.Image) {
 	b.Sprite.Draw(screen)
 }
 
+func (b *Bullet) Intersect() trait.Intersector {
+	return b.intersect
+}
+
 func NewBullet() *Bullet {
 	bulletImage, _, err := ebitenutil.NewImageFromFile("resources/images/gopher.png")
 
