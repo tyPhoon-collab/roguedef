@@ -12,13 +12,13 @@ import (
 type Debug struct {
 	showIntersects bool
 	game           *Game
-	levelManager   *LevelManager
+	phaseManager   *PhaseManager
 	player         *Player
 }
 
 func (d *Debug) Register(g *Game, o *system.Object) {
 	d.game = g
-	d.levelManager = g.ObjectByTag("level_manager").Data.(*LevelManager)
+	d.phaseManager = g.ObjectByTag("phase_manager").Data.(*PhaseManager)
 	d.player = g.ObjectByTag("player").Data.(*Player)
 }
 
@@ -30,7 +30,7 @@ func (d *Debug) Update() {
 
 func (d *Debug) Draw(screen *ebiten.Image) {
 	tps := ebiten.ActualTPS()
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f\nLevel: %d\nExp: %d", tps, d.levelManager.level, d.player.exp))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f\nLevel: %d\nExp: %d", tps, d.phaseManager.level, d.player.exp))
 
 	if d.showIntersects {
 		for _, o := range d.game.Intersects() {

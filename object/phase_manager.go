@@ -8,33 +8,33 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-type LevelManager struct {
+type PhaseManager struct {
 	enemySpawner *EnemySpawner
 	game         *Game
 	level        int
 }
 
-func (l *LevelManager) Register(g *Game, o *system.Object) {
+func (l *PhaseManager) Register(g *Game, o *system.Object) {
 	l.game = g
 }
 
-func (l *LevelManager) Update() {
+func (l *PhaseManager) Update() {
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 		l.NextLevel()
 	}
 }
 
-func (l *LevelManager) NextLevel() {
+func (l *PhaseManager) NextLevel() {
 	l.SetLevel(l.level + 1)
 }
 
-func (l *LevelManager) SetLevel(level int) {
+func (l *PhaseManager) SetLevel(level int) {
 	l.level = level
 	l.enemySpawner.SetFrequency(time.Duration(5000.0/(l.level*10)+100) * time.Millisecond)
 }
 
-func NewLevelManager(enemySpawner *EnemySpawner) *LevelManager {
-	m := &LevelManager{
+func NewPhaseManager(enemySpawner *EnemySpawner) *PhaseManager {
+	m := &PhaseManager{
 		enemySpawner: enemySpawner,
 	}
 	m.SetLevel(1)
