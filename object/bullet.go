@@ -32,6 +32,10 @@ func (b *Bullet) Draw(screen *ebiten.Image) {
 	b.sprite.Draw(screen)
 }
 
+func (b *Bullet) Priority() int {
+	return 5
+}
+
 func (b *Bullet) Intersect() system.Intersector {
 	return b.intersect
 }

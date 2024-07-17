@@ -32,6 +32,10 @@ func (p *Transform) Copy() *Transform {
 	}
 }
 
+func (p *Transform) Priority() int {
+	return int(p.Pos.Y)
+}
+
 func NewTransform() *Transform {
 	return &Transform{
 		Pos:   Vec2{X: 0, Y: 0},

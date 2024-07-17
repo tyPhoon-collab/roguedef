@@ -89,7 +89,16 @@ func (g *Game) checkIntersects() {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	for _, o := range g.drawers {
+	drawers := make([]Drawer, 0, len(g.drawers))
+
+	for _, v := range g.drawers {
+		drawers = append(drawers, v)
+	}
+
+	slices.SortFunc(drawers, func(a, b Drawer) int {
+		return a.Priority() - b.Priority()
+	})
+	for _, o := range drawers {
 		o.Draw(screen)
 	}
 }

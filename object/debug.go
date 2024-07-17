@@ -45,6 +45,10 @@ func (d *Debug) Draw(screen *ebiten.Image) {
 	}
 }
 
+func (d *Debug) Priority() int {
+	return 100
+}
+
 func NewDebug() *Debug {
 	return &Debug{}
 }

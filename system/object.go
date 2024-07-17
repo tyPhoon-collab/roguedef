@@ -7,6 +7,7 @@ import (
 
 type Drawer interface {
 	Draw(screen *ebiten.Image)
+	Priority() int
 }
 
 type Updater interface {
