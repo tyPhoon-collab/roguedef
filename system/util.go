@@ -10,7 +10,7 @@ import (
 var DeltaTime = time.Second / time.Duration(ebiten.TPS())
 
 func DurationToFrameCount(duration time.Duration) int {
-	tps := float64(ebiten.ActualTPS())
+	tps := float64(ebiten.TPS())
 	floatFrameCount := duration.Seconds() * tps
 	frameCount := int(math.Round(floatFrameCount))
 	if frameCount == 0 {

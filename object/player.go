@@ -31,8 +31,12 @@ func (p *Player) String() string {
 func (p *Player) AddExp(exp int) {
 	p.exp += exp
 
-	level := p.exp/100 + 1
+	level := p.Level()
 	p.bulletSpawner.SetFrequency(time.Duration(1000.0/(level*5)+100) * time.Millisecond)
+}
+
+func (p *Player) Level() int {
+	return p.exp/100 + 1
 }
 
 func NewPlayer(pos Vec2) *Player {

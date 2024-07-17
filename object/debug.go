@@ -30,7 +30,13 @@ func (d *Debug) Update() {
 
 func (d *Debug) Draw(screen *ebiten.Image) {
 	tps := ebiten.ActualTPS()
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f\nLevel: %d\nExp: %d", tps, d.phaseManager.level, d.player.exp))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf(
+		"TPS: %0.2f\nPhase: %d\nExp: %d\nLevel: %d",
+		tps,
+		d.phaseManager.phase,
+		d.player.exp,
+		d.player.Level(),
+	))
 
 	if d.showIntersects {
 		for _, o := range d.game.Intersects() {

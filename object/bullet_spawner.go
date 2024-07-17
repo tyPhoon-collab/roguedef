@@ -32,7 +32,6 @@ func (r *BulletSpawner) addBullet() {
 	}
 
 	bullet := NewBullet(dir.MulScalar(10))
-
 	bullet.Pos = r.player.Pos
 
 	r.game.AddObjectWithData(bullet)
