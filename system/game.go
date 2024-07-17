@@ -146,18 +146,20 @@ func (g *Game) AddObject(o *Object) {
 	if o.Drawer != nil {
 		g.drawers[o.ID] = o.Drawer
 	}
-
 	if o.Updater != nil {
 		g.updaters[o.ID] = o.Updater
 	}
 
-	if o.Intersector != nil {
-		g.intersects[o.ID] = o.Intersector
-	}
+	g.AddTaskPostFrame(func() error {
+		if o.Intersector != nil {
+			g.intersects[o.ID] = o.Intersector
+		}
+		if o.IntersectHandler != nil {
+			g.intersectHandlers[o.ID] = o.IntersectHandler
+		}
 
-	if o.IntersectHandler != nil {
-		g.intersectHandlers[o.ID] = o.IntersectHandler
-	}
+		return nil
+	})
 }
 
 func (g *Game) AddObjectWithData(data Data) *Object {
