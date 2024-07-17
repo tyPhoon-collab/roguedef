@@ -35,12 +35,7 @@ func (r *BulletSpawner) addBullet() {
 
 	bullet.Pos = r.player.Pos
 
-	obj := r.game.AddObjectWithData(bullet)
-
-	r.game.AddTaskAfter(3*time.Second, func() error {
-		r.game.RemoveObject(obj.ID)
-		return nil
-	})
+	r.game.AddObjectWithData(bullet)
 }
 
 func (r *BulletSpawner) calculateTarget() (Vec2, bool) {

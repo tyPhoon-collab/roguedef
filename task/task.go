@@ -5,8 +5,9 @@ import (
 )
 
 type Task struct {
-	at   int
-	task func() error
+	at     int
+	task   func() error
+	active bool
 }
 
 func (t Task) String() string {
@@ -15,6 +16,10 @@ func (t Task) String() string {
 
 func (t Task) At() int {
 	return t.at
+}
+
+func (t *Task) Active() bool {
+	return t.active
 }
 
 func (t Task) ShouldExecute(frameCount int) bool {
@@ -27,7 +32,8 @@ func (t Task) Execute() error {
 
 func NewTask(at int, task func() error) Task {
 	return Task{
-		at:   at,
-		task: task,
+		at:     at,
+		task:   task,
+		active: true,
 	}
 }

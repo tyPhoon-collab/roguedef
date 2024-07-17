@@ -47,6 +47,11 @@ func (g *Game) Update() error {
 func (g *Game) executeTask() {
 	if len(g.taskQueue) > 0 {
 		t := g.taskQueue[0]
+
+		if !t.Active() {
+			g.taskQueue = g.taskQueue[1:]
+			g.executeTask()
+		}
 		if t.ShouldExecute(g.frameCount) {
 			err := t.Execute()
 			if err != nil {
@@ -91,6 +96,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return 320, 640
+}
+
+func (g *Game) IsOutside(pos Vec2) bool {
+	x, y := pos.X, pos.Y
+	return x < 0 || y < 0 || x >= 320 || y >= 640
 }
 
 func (g *Game) ObjectsByTag(tag string) chan *Object {
@@ -173,7 +183,7 @@ func (g *Game) RemoveObject(id iD) {
 		}
 
 		if obj.OnRemoveHandler != nil {
-			obj.OnRemoveHandler.OnRemove()
+			obj.OnRemove()
 		}
 
 		delete(g.objects, id)

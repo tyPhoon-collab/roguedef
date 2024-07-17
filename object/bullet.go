@@ -23,6 +23,9 @@ func (b *Bullet) Register(g *Game, o *system.Object) {
 
 func (b *Bullet) Update() {
 	b.velocity.Update()
+	if b.game.IsOutside(b.Pos) {
+		b.game.RemoveObject(b.object.ID)
+	}
 }
 
 func (b *Bullet) Draw(screen *ebiten.Image) {
