@@ -6,8 +6,10 @@ import (
 )
 
 type EnemySpawner struct {
-	game       *Game
-	spawnRange Rect
+	game           *Game
+	spawnRange     Rect
+	frequency      time.Duration
+	timeAccumulate time.Duration
 }
 
 func (s *EnemySpawner) Register(g *Game, o *system.Object) {
@@ -15,12 +17,19 @@ func (s *EnemySpawner) Register(g *Game, o *system.Object) {
 }
 
 func (s *EnemySpawner) Update() {
-	if s.game.FrameCount()%120 == 0 {
-		s.spawnEnemy()
+	s.timeAccumulate += system.DeltaTime
+	s.spawn()
+}
+
+func (s *EnemySpawner) spawn() {
+	if s.timeAccumulate >= s.frequency {
+		s.addEnemy()
+		s.timeAccumulate -= s.frequency
+		s.spawn() // spawn again
 	}
 }
 
-func (s *EnemySpawner) spawnEnemy() {
+func (s *EnemySpawner) addEnemy() {
 	enemy := NewEnemy()
 	enemy.Pos = s.spawnRange.RandomPoint()
 

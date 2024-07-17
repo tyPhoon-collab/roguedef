@@ -20,18 +20,20 @@ func main() {
 
 	player := object.NewPlayer(Vec2{X: 160, Y: 590})
 	cursor := object.NewCursor()
-	debug := object.NewDebug()
 	bulletSpawner := object.NewBulletSpawner(player)
 	enemySpawner := object.NewEnemySpawner(rect.Rect{
 		Min: Vec2{X: 20, Y: 0},
 		Max: Vec2{X: 300, Y: 10},
 	})
+	levelManager := object.NewLevelManager(enemySpawner)
+	debug := object.NewDebug()
 
-	game.AddObjectWithData(bulletSpawner)
 	game.AddObjectWithData(player)
 	game.AddObjectWithData(cursor)
-	game.AddObjectWithData(debug)
+	game.AddObjectWithData(bulletSpawner)
 	game.AddObjectWithData(enemySpawner)
+	game.AddObjectWithData(levelManager).WithTag("level_manager")
+	game.AddObjectWithData(debug)
 
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
