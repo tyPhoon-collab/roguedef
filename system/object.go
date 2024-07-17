@@ -16,6 +16,7 @@ type Updater interface {
 type Object struct {
 	ID   uuid.UUID
 	Data Data
+	Tag  string
 	Updater
 	Drawer
 	Intersector
@@ -43,6 +44,11 @@ func (o *Object) WithIntersector(intersector Intersector) *Object {
 
 func (o *Object) WithIntersectHandler(handler IntersectHandler) *Object {
 	o.IntersectHandler = handler
+	return o
+}
+
+func (o *Object) WithTag(tag string) *Object {
+	o.Tag = tag
 	return o
 }
 

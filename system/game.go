@@ -92,6 +92,34 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return 320, 640
 }
 
+func (g *Game) ObjectsByTag(tag string) chan *Object {
+	ch := make(chan *Object)
+
+	go func() {
+		defer close(ch)
+		for _, o := range g.objects {
+			if o.Tag == tag {
+				ch <- o
+			}
+		}
+	}()
+
+	return ch
+}
+
+func (g *Game) Objects() chan *Object {
+	ch := make(chan *Object)
+
+	go func() {
+		defer close(ch)
+		for _, o := range g.objects {
+			ch <- o
+		}
+	}()
+
+	return ch
+}
+
 func (g *Game) AddObject(o *Object) {
 	g.objects[o.ID] = o
 

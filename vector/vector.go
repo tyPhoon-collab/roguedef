@@ -69,12 +69,28 @@ func (v Vec2) Len() float64 {
 	return math.Sqrt(v.X*v.X + v.Y*v.Y)
 }
 
+func (v Vec2) Distance(v2 Vec2) float64 {
+	return v.Sub(v2).Len()
+}
+
+func (v Vec2) Angle() float64 {
+	return math.Atan2(v.Y, v.X)
+}
+
+func (v Vec2) AngleTo(v2 Vec2) float64 {
+	return v.Sub(v2).Angle()
+}
+
 func (v Vec2) Normalize() (Vec2, error) {
 	length := v.Len()
 	if length == 0 {
 		return Vec2{}, &ZeroDivisionError{}
 	}
 	return v.DivScalar(length)
+}
+
+func (v Vec2) DirTo(v2 Vec2) (Vec2, error) {
+	return v2.Sub(v).Normalize()
 }
 
 func (v Vec2) String() string {

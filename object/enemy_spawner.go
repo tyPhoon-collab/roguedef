@@ -24,7 +24,7 @@ func (s *EnemySpawner) spawnEnemy() {
 	enemy := NewEnemy()
 	enemy.Pos = s.spawnRange.RandomPoint()
 
-	obj := s.game.AddObjectWithData(enemy)
+	obj := s.game.AddObjectWithData(enemy).WithTag("enemy")
 	s.game.AddTaskAfter(10*time.Second, func() error {
 		s.game.RemoveObject(obj.ID)
 		return nil
