@@ -14,6 +14,7 @@ type Enemy struct {
 	sprite    *system.Sprite
 	velocity  *system.Velocity
 	intersect system.Intersector
+	player    *Player
 }
 
 func (e *Enemy) Register(g *Game, o *system.Object) {
@@ -38,6 +39,17 @@ func (e *Enemy) OnIntersect(other *system.Object) {
 	if _, ok := other.Data.(*Bullet); ok {
 		e.game.RemoveObject(e.object.ID)
 	}
+}
+
+func (e *Enemy) OnRemove() {
+	if e.player != nil {
+		e.player.AddExp(10)
+	}
+}
+
+func (e *Enemy) WithPlayer(player *Player) *Enemy {
+	e.player = player
+	return e
 }
 
 func NewEnemy() *Enemy {

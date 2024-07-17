@@ -30,7 +30,7 @@ func (l *LevelManager) NextLevel() {
 
 func (l *LevelManager) SetLevel(level int) {
 	l.level = level
-	l.enemySpawner.frequency = time.Duration(5000.0/(l.level*10)+100) * time.Millisecond
+	l.enemySpawner.SetFrequency(time.Duration(5000.0/(l.level*10)+100) * time.Millisecond)
 }
 
 func NewLevelManager(enemySpawner *EnemySpawner) *LevelManager {

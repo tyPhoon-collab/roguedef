@@ -2,14 +2,13 @@ package object
 
 import (
 	"roguedef/system"
-	"time"
 )
 
 type EnemySpawner struct {
-	game           *Game
-	spawnRange     Rect
-	frequency      time.Duration
-	timeAccumulate time.Duration
+	game       *Game
+	spawnRange Rect
+	player     *Player
+	*system.Looper
 }
 
 func (s *EnemySpawner) Register(g *Game, o *system.Object) {
@@ -17,31 +16,25 @@ func (s *EnemySpawner) Register(g *Game, o *system.Object) {
 }
 
 func (s *EnemySpawner) Update() {
-	s.timeAccumulate += system.DeltaTime
-	s.spawn()
-}
-
-func (s *EnemySpawner) spawn() {
-	if s.timeAccumulate >= s.frequency {
-		s.addEnemy()
-		s.timeAccumulate -= s.frequency
-		s.spawn() // spawn again
-	}
+	s.Looper.Update()
 }
 
 func (s *EnemySpawner) addEnemy() {
-	enemy := NewEnemy()
+	enemy := NewEnemy().WithPlayer(s.player)
 	enemy.Pos = s.spawnRange.RandomPoint()
+	s.game.AddObjectWithData(enemy).WithTag("enemy")
+}
 
-	obj := s.game.AddObjectWithData(enemy).WithTag("enemy")
-	s.game.AddTaskAfter(10*time.Second, func() error {
-		s.game.RemoveObject(obj.ID)
-		return nil
-	})
+func (s *EnemySpawner) WithPlayer(player *Player) *EnemySpawner {
+	s.player = player
+	return s
 }
 
 func NewEnemySpawner(spawnRange Rect) *EnemySpawner {
-	return &EnemySpawner{
+	s := &EnemySpawner{
 		spawnRange: spawnRange,
 	}
+	s.Looper = system.NewLooper(-1, s.addEnemy)
+
+	return s
 }

@@ -1,6 +1,7 @@
 package system
 
 import (
+	"fmt"
 	"roguedef/task"
 	"slices"
 	"time"
@@ -107,6 +108,15 @@ func (g *Game) ObjectsByTag(tag string) chan *Object {
 	return ch
 }
 
+func (g *Game) ObjectByTag(tag string) *Object {
+	for _, o := range g.objects {
+		if o.Tag == tag {
+			return o
+		}
+	}
+	return nil
+}
+
 func (g *Game) Objects() chan *Object {
 	ch := make(chan *Object)
 
@@ -143,13 +153,29 @@ func (g *Game) AddObject(o *Object) {
 func (g *Game) AddObjectWithData(data Data) *Object {
 	obj := NewObjectWithData(data)
 	g.AddObject(obj)
-	data.Register(g, obj)
+
+	g.AddTaskPostFrame(func() error {
+		data.Register(g, obj)
+
+		return nil
+	})
 
 	return obj
 }
 
 func (g *Game) RemoveObject(id iD) {
 	g.AddTaskPostFrame(func() error {
+		obj, ok := g.objects[id]
+
+		if !ok {
+			fmt.Println("object not found")
+			return nil
+		}
+
+		if obj.OnRemoveHandler != nil {
+			obj.OnRemoveHandler.OnRemove()
+		}
+
 		delete(g.objects, id)
 		delete(g.drawers, id)
 		delete(g.updaters, id)

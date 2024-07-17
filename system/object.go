@@ -13,6 +13,10 @@ type Updater interface {
 	Update()
 }
 
+type OnRemoveHandler interface {
+	OnRemove()
+}
+
 type Object struct {
 	ID   uuid.UUID
 	Data Data
@@ -21,6 +25,7 @@ type Object struct {
 	Drawer
 	Intersector
 	IntersectHandler
+	OnRemoveHandler
 }
 
 type Data interface {
@@ -44,6 +49,11 @@ func (o *Object) WithIntersector(intersector Intersector) *Object {
 
 func (o *Object) WithIntersectHandler(handler IntersectHandler) *Object {
 	o.IntersectHandler = handler
+	return o
+}
+
+func (o *Object) WithOnRemoveHandler(handler OnRemoveHandler) *Object {
+	o.OnRemoveHandler = handler
 	return o
 }
 
@@ -72,6 +82,9 @@ func NewObjectWithData(data Data) *Object {
 	}
 	if o, ok := data.(IntersectHandler); ok {
 		obj.IntersectHandler = o
+	}
+	if o, ok := data.(OnRemoveHandler); ok {
+		obj.OnRemoveHandler = o
 	}
 	return obj
 }

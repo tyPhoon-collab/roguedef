@@ -8,6 +8,7 @@ import (
 type BulletSpawner struct {
 	player *Player
 	game   *Game
+	*system.Looper
 }
 
 func (r *BulletSpawner) Register(g *Game, o *system.Object) {
@@ -15,12 +16,10 @@ func (r *BulletSpawner) Register(g *Game, o *system.Object) {
 }
 
 func (r *BulletSpawner) Update() {
-	if r.game.FrameCount()%30 == 0 {
-		r.spawnBullet()
-	}
+	r.Looper.Update()
 }
 
-func (r *BulletSpawner) spawnBullet() {
+func (r *BulletSpawner) addBullet() {
 	target, ok := r.calculateTarget()
 
 	if !ok {
@@ -69,5 +68,9 @@ func (r *BulletSpawner) calculateTarget() (Vec2, bool) {
 }
 
 func NewBulletSpawner(player *Player) *BulletSpawner {
-	return &BulletSpawner{player: player}
+	s := &BulletSpawner{player: player}
+
+	s.Looper = system.NewLooper(time.Second, s.addBullet)
+
+	return s
 }

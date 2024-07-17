@@ -24,13 +24,13 @@ func main() {
 	enemySpawner := object.NewEnemySpawner(rect.Rect{
 		Min: Vec2{X: 20, Y: 0},
 		Max: Vec2{X: 300, Y: 10},
-	})
+	}).WithPlayer(player)
 	levelManager := object.NewLevelManager(enemySpawner)
 	debug := object.NewDebug()
 
-	game.AddObjectWithData(player)
+	game.AddObjectWithData(player).WithTag("player")
 	game.AddObjectWithData(cursor)
-	game.AddObjectWithData(bulletSpawner)
+	game.AddObjectWithData(bulletSpawner).WithTag("bullet_spawner")
 	game.AddObjectWithData(enemySpawner)
 	game.AddObjectWithData(levelManager).WithTag("level_manager")
 	game.AddObjectWithData(debug)

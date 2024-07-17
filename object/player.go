@@ -1,6 +1,8 @@
 package object
 
 import (
+	"time"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 
@@ -9,10 +11,14 @@ import (
 
 type Player struct {
 	*system.Transform
-	sprite *system.Sprite
+	sprite        *system.Sprite
+	exp           int
+	bulletSpawner *BulletSpawner
 }
 
-func (p *Player) Register(g *Game, o *system.Object) {}
+func (p *Player) Register(g *Game, o *system.Object) {
+	p.bulletSpawner = g.ObjectByTag("bullet_spawner").Data.(*BulletSpawner)
+}
 
 func (p *Player) Draw(screen *ebiten.Image) {
 	p.sprite.Draw(screen)
@@ -20,6 +26,13 @@ func (p *Player) Draw(screen *ebiten.Image) {
 
 func (p *Player) String() string {
 	return "Player: " + p.Pos.String()
+}
+
+func (p *Player) AddExp(exp int) {
+	p.exp += exp
+
+	level := p.exp/100 + 1
+	p.bulletSpawner.SetFrequency(time.Duration(1000.0/(level*5)+100) * time.Millisecond)
 }
 
 func NewPlayer(pos Vec2) *Player {
