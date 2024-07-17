@@ -20,10 +20,10 @@ func main() {
 
 	player := object.NewPlayer(Vec2{X: 160, Y: 590})
 	cursor := object.NewCursor()
-	debug := object.NewDebug(player)
+	debug := object.NewDebug()
 	bulletSpawner := object.NewBulletSpawner(player)
 	enemySpawner := object.NewEnemySpawner(rect.Rect{
-		Min: Vec2{X: 0, Y: 0},
+		Min: Vec2{X: 20, Y: 0},
 		Max: Vec2{X: 300, Y: 10},
 	})
 

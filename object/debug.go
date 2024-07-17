@@ -4,13 +4,11 @@ import (
 	"roguedef/system"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type Debug struct {
 	showIntersects bool
-	player         *Player
 	game           *Game
 }
 
@@ -25,8 +23,6 @@ func (d *Debug) Update() {
 }
 
 func (d *Debug) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, d.player.String())
-
 	if d.showIntersects {
 		for _, o := range d.game.Intersects() {
 			o.Draw(screen)
@@ -34,8 +30,6 @@ func (d *Debug) Draw(screen *ebiten.Image) {
 	}
 }
 
-func NewDebug(player *Player) *Debug {
-	return &Debug{
-		player: player,
-	}
+func NewDebug() *Debug {
+	return &Debug{}
 }
