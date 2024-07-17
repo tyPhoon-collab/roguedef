@@ -15,7 +15,7 @@ func (s *EnemySpawner) Register(g *Game, o *system.Object) {
 }
 
 func (s *EnemySpawner) Update() {
-	if s.game.FrameCount()%60 == 0 {
+	if s.game.FrameCount()%120 == 0 {
 		s.spawnEnemy()
 	}
 }

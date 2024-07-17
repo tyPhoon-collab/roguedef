@@ -3,9 +3,6 @@ package object
 import (
 	"roguedef/system"
 	"time"
-
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type BulletSpawner struct {
@@ -18,13 +15,18 @@ func (r *BulletSpawner) Register(g *Game, o *system.Object) {
 }
 
 func (r *BulletSpawner) Update() {
-	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+	if r.game.FrameCount()%30 == 0 {
 		r.spawnBullet()
 	}
 }
 
 func (r *BulletSpawner) spawnBullet() {
-	target := r.calculateTarget()
+	target, ok := r.calculateTarget()
+
+	if !ok {
+		return
+	}
+
 	dir, err := r.player.Pos.DirTo(target)
 	if err != nil {
 		return
@@ -42,9 +44,9 @@ func (r *BulletSpawner) spawnBullet() {
 	})
 }
 
-func (r *BulletSpawner) calculateTarget() Vec2 {
+func (r *BulletSpawner) calculateTarget() (Vec2, bool) {
 	nearestDistance := -1.0
-	nearestEnemy := Vec2{X: -1, Y: -1}
+	nearestEnemy := Vec2{}
 
 	for o := range r.game.ObjectsByTag("enemy") {
 		enemy := o.Data.(*Enemy)
@@ -59,7 +61,11 @@ func (r *BulletSpawner) calculateTarget() Vec2 {
 			nearestEnemy = enemy.Pos
 		}
 	}
-	return nearestEnemy
+
+	if nearestDistance == -1.0 {
+		return Vec2{}, false
+	}
+	return nearestEnemy, true
 }
 
 func NewBulletSpawner(player *Player) *BulletSpawner {
