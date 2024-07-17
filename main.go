@@ -18,9 +18,9 @@ func main() {
 
 	game := system.NewGame()
 
-	player := object.NewPlayer(Vec2{X: 136, Y: 550})
+	player := object.NewPlayer(Vec2{X: 160, Y: 590})
 	cursor := object.NewCursor()
-	debug := object.NewDebug()
+	debug := object.NewDebug(player)
 	bulletSpawner := object.NewBulletSpawner(player)
 	enemySpawner := object.NewEnemySpawner(rect.Rect{
 		Min: Vec2{X: 0, Y: 0},

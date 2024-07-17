@@ -66,23 +66,13 @@ func (c *Circle) WithRadius(radius float64) *Circle {
 
 func (c *Circle) FromImage(image *ebiten.Image) *Circle {
 	circle := calculateRadiusFromImage(image)
-	center := calculateCenterFromImage(image)
-
 	c.radius = circle
-	c.offset = center
 
 	return c
 }
 
 func calculateRadiusFromImage(image *ebiten.Image) float64 {
 	return float64(image.Bounds().Dx()) / 2
-}
-
-func calculateCenterFromImage(image *ebiten.Image) Vec2 {
-	return Vec2{
-		X: float64(image.Bounds().Dx()) / 2,
-		Y: float64(image.Bounds().Dy()) / 2,
-	}
 }
 
 func NewCircle() *Circle {
