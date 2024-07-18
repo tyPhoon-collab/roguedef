@@ -33,8 +33,10 @@ func (g *Game) Intersects() map[iD]Intersector {
 func (g *Game) Update() error {
 	g.executeTask()
 
-	for _, o := range g.updaters {
-		o.Update()
+	for id, o := range g.updaters {
+		if g.objects[id].Active {
+			o.Update()
+		}
 	}
 
 	g.checkIntersects()
@@ -89,10 +91,12 @@ func (g *Game) checkIntersects() {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	drawers := make([]Drawer, 0, len(g.drawers))
+	drawers := make([]Drawer, 0)
 
-	for _, v := range g.drawers {
-		drawers = append(drawers, v)
+	for id, v := range g.drawers {
+		if g.objects[id].Active {
+			drawers = append(drawers, v)
+		}
 	}
 
 	slices.SortFunc(drawers, func(a, b Drawer) int {

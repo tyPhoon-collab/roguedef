@@ -19,9 +19,10 @@ type OnRemoveHandler interface {
 }
 
 type Object struct {
-	ID   uuid.UUID
-	Data Data
-	Tag  string
+	ID     uuid.UUID
+	Data   Data
+	Tag    string
+	Active bool
 	Updater
 	Drawer
 	Intersector
@@ -65,7 +66,8 @@ func (o *Object) WithTag(tag string) *Object {
 
 func NewObject() *Object {
 	return &Object{
-		ID: uuid.New(),
+		ID:     uuid.New(),
+		Active: true,
 	}
 }
 
