@@ -7,7 +7,12 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+var TimeScale = 1.0
 var DeltaTime = time.Second / time.Duration(ebiten.TPS())
+
+func ScaledDeltaTime() time.Duration {
+	return time.Duration(float64(DeltaTime) * TimeScale)
+}
 
 func DurationToFrameCount(duration time.Duration) int {
 	tps := float64(ebiten.TPS())

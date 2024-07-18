@@ -6,7 +6,7 @@ type Velocity struct {
 }
 
 func (v *Velocity) Update() {
-	v.Move(v.Velocity)
+	v.Move(v.Velocity.MulScalar(TimeScale))
 }
 
 func (v *Velocity) With(velocity Vec2) *Velocity {

@@ -13,29 +13,43 @@ type Player struct {
 	*system.Transform
 	sprite        *system.Sprite
 	exp           int
+	level         int
 	bulletSpawner *BulletSpawner
+	ui            *UI
 }
 
 func (p *Player) Register(g *Game, o *system.Object) {
 	p.bulletSpawner = g.ObjectByTag("bullet_spawner").Data.(*BulletSpawner)
+	p.ui = g.ObjectByTag("ui").Data.(*UI)
 }
 
 func (p *Player) Draw(screen *ebiten.Image) {
 	p.sprite.Draw(screen)
 }
 
-func (p *Player) String() string {
-	return "Player: " + p.Pos.String()
-}
-
 func (p *Player) AddExp(exp int) {
 	p.exp += exp
+	p.checkLevel()
+}
 
-	level := p.Level()
+func (p *Player) checkLevel() {
+	level := p.calculateLevel()
+
+	if level != p.level {
+		go p.setLevel(level)
+	}
+}
+
+func (p *Player) setLevel(level int) {
+	p.level = level
+
+	system.TimeScale = 0
+	<-p.ui.ShowUpgradeSelectionPopup()
+	system.TimeScale = 1
 	p.bulletSpawner.SetFrequency(time.Duration(1000.0/(level*5)+100) * time.Millisecond)
 }
 
-func (p *Player) Level() int {
+func (p *Player) calculateLevel() int {
 	return p.exp/100 + 1
 }
 

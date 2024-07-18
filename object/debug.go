@@ -35,7 +35,7 @@ func (d *Debug) Draw(screen *ebiten.Image) {
 		tps,
 		d.phaseManager.phase,
 		d.player.exp,
-		d.player.Level(),
+		d.player.level,
 	))
 
 	if d.showIntersects {

@@ -15,7 +15,7 @@ func (l *Looper) SetFrequency(frequency time.Duration) {
 }
 
 func (l *Looper) Update() {
-	l.timeAccumulate += DeltaTime
+	l.timeAccumulate += ScaledDeltaTime()
 	l.doLoop()
 }
 

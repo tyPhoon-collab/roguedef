@@ -18,3 +18,7 @@ func (r Rect) RandomPoint() Vec2 {
 		Y: r.Min.Y + rand.Float64()*(r.Max.Y-r.Min.Y),
 	}
 }
+
+func (r Rect) Includes(v Vec2) bool {
+	return r.Min.X <= v.X && v.X <= r.Max.X && r.Min.Y <= v.Y && v.Y <= r.Max.Y
+}

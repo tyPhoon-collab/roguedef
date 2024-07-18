@@ -1,10 +1,13 @@
 {
     "cSpell.words": [
         "ebiten",
+        "ebitenui",
         "ebitenutil",
+        "goregular",
         "hajimehoshi",
         "inpututil",
         "Intersector",
-        "roguedef"
+        "roguedef",
+        "truetype"
     ]
 }

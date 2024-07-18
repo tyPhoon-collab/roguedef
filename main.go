@@ -19,6 +19,7 @@ func main() {
 	game := system.NewGame()
 
 	background := object.NewBackground()
+	ui := object.NewUI()
 	player := object.NewPlayer(Vec2{X: 160, Y: 590})
 	bulletSpawner := object.NewBulletSpawner(player)
 	enemySpawner := object.NewEnemySpawner(rect.Rect{
@@ -29,6 +30,7 @@ func main() {
 	debug := object.NewDebug()
 
 	game.AddObjectWithData(background)
+	game.AddObjectWithData(ui).WithTag("ui")
 	game.AddObjectWithData(player).WithTag("player")
 	game.AddObjectWithData(bulletSpawner).WithTag("bullet_spawner")
 	game.AddObjectWithData(enemySpawner)
