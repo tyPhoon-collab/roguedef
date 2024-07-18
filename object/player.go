@@ -44,9 +44,12 @@ func (p *Player) setLevel(level int) {
 	p.level = level
 
 	system.TimeScale = 0
-	<-p.ui.ShowUpgradeSelectionPopup()
+	index := <-p.ui.ShowUpgradeSelectionPopup()
+	switch index {
+	default:
+		p.bulletSpawner.SetFrequency(time.Duration(1000.0/(level*5)+100) * time.Millisecond)
+	}
 	system.TimeScale = 1
-	p.bulletSpawner.SetFrequency(time.Duration(1000.0/(level*5)+100) * time.Millisecond)
 }
 
 func (p *Player) calculateLevel() int {

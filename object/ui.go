@@ -35,8 +35,8 @@ func (u *UI) Update() {
 	u.ui.Update()
 }
 
-func (u *UI) ShowUpgradeSelectionPopup() chan bool {
-	ch := make(chan bool)
+func (u *UI) ShowUpgradeSelectionPopup() chan int {
+	ch := make(chan int)
 
 	var removeFunc widget.RemoveWindowFunc
 
@@ -61,7 +61,7 @@ func (u *UI) ShowUpgradeSelectionPopup() chan bool {
 			u.bOpts(fmt.Sprintf("Upgrade %d", i), func(args *widget.ButtonClickedEventArgs) {
 				fmt.Println("Upgrade", i)
 				removeFunc()
-				ch <- true
+				ch <- i
 			})...,
 		))
 	}
