@@ -10,6 +10,7 @@ import (
 
 type Bullet struct {
 	*system.Transform
+	*domain.AttackStatus
 	game      *Game
 	object    *system.Object
 	sprite    *system.Sprite
@@ -18,7 +19,7 @@ type Bullet struct {
 }
 
 func (b *Bullet) Attack(status *domain.Status) {
-	status.Hp -= 10
+	status.Hp -= b.Damage
 }
 
 func (b *Bullet) Register(g *Game, o *system.Object) {
@@ -51,7 +52,7 @@ func (b *Bullet) OnIntersect(other *system.Object) {
 	}
 }
 
-func NewBullet(vel Vec2) *Bullet {
+func NewBullet(vel Vec2, status *domain.AttackStatus) *Bullet {
 	bulletImage, _, err := ebitenutil.NewImageFromFile("resources/images/gopher.png")
 
 	if err != nil {
@@ -62,9 +63,10 @@ func NewBullet(vel Vec2) *Bullet {
 	transform.Scale = transform.Scale.MulScalar(0.2)
 
 	return &Bullet{
-		Transform: transform,
-		sprite:    system.NewSprite(bulletImage).WithTransform(transform),
-		velocity:  system.NewVelocity().WithTransform(transform).With(vel),
-		intersect: system.NewCircle().WithTransform(transform).FromImage(bulletImage),
+		Transform:    transform,
+		AttackStatus: status,
+		sprite:       system.NewSprite(bulletImage).WithTransform(transform),
+		velocity:     system.NewVelocity().WithTransform(transform).With(vel),
+		intersect:    system.NewCircle().WithTransform(transform).FromImage(bulletImage),
 	}
 }

@@ -1,13 +1,16 @@
 package object
 
 import (
+	"roguedef/domain"
 	"roguedef/system"
 	"time"
 )
 
 type BulletSpawner struct {
-	player *Player
-	game   *Game
+	player  *Player
+	game    *Game
+	bSpeed  float64
+	bDamage int
 	*system.Looper
 }
 
@@ -31,7 +34,7 @@ func (r *BulletSpawner) addBullet() {
 		return
 	}
 
-	bullet := NewBullet(dir.MulScalar(10))
+	bullet := NewBullet(dir.MulScalar(r.bSpeed), &domain.AttackStatus{Damage: r.bDamage})
 	bullet.Pos = r.player.Pos
 
 	r.game.AddObjectWithData(bullet)
@@ -62,7 +65,7 @@ func (r *BulletSpawner) calculateTarget() (Vec2, bool) {
 }
 
 func NewBulletSpawner(player *Player) *BulletSpawner {
-	s := &BulletSpawner{player: player}
+	s := &BulletSpawner{player: player, bSpeed: 10, bDamage: 10}
 
 	s.Looper = system.NewLooper(time.Second, s.addBullet)
 

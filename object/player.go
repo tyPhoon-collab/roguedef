@@ -5,6 +5,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 
 	"roguedef/domain"
+	"roguedef/domain/upgrade"
 	"roguedef/system"
 )
 
@@ -35,10 +36,14 @@ func (p *Player) AddExp(exp int) {
 
 func (p *Player) onLevelChanged() {
 	system.TimeScale = 0
-	index := <-p.ui.ShowUpgradeSelection()
-	switch index {
-	default:
-		system.ScaleDuration(&p.bulletSpawner.Frequency, 0.8)
+	v := <-p.ui.ShowUpgradeSelection()
+	switch v {
+	case upgrade.UpgradeFrequency:
+		system.ScaleDuration(&p.bulletSpawner.Frequency, 0.75)
+	case upgrade.UpgradePower:
+		p.bulletSpawner.bDamage = system.ScaleIntByFloat(p.bulletSpawner.bDamage, 1.5)
+	case upgrade.UpgradeSpeed:
+		p.bulletSpawner.bSpeed *= 1.5
 	}
 	system.TimeScale = 1
 }

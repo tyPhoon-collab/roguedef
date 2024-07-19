@@ -1,8 +1,8 @@
 package object
 
 import (
-	"fmt"
 	"image/color"
+	"roguedef/domain/upgrade"
 	"roguedef/system"
 
 	"github.com/ebitenui/ebitenui"
@@ -79,8 +79,8 @@ func (u *UI) ShowGameOver() chan int {
 	return ch
 }
 
-func (u *UI) ShowUpgradeSelection() chan int {
-	ch := make(chan int)
+func (u *UI) ShowUpgradeSelection() chan upgrade.Upgrade {
+	ch := make(chan upgrade.Upgrade)
 
 	var removeFunc widget.RemoveWindowFunc
 
@@ -100,11 +100,11 @@ func (u *UI) ShowUpgradeSelection() chan int {
 		),
 	)
 
-	for i := 0; i < 3; i++ {
+	for _, v := range upgrade.Values() {
 		windowContent.AddChild(widget.NewButton(
-			u.bOpts(fmt.Sprintf("Upgrade %d", i), func(args *widget.ButtonClickedEventArgs) {
+			u.bOpts(v.String(), func(args *widget.ButtonClickedEventArgs) {
 				removeFunc()
-				ch <- i
+				ch <- v
 			})...,
 		))
 	}
