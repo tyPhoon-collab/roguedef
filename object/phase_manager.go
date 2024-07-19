@@ -20,6 +20,10 @@ func (l *PhaseManager) Update() {
 	l.Looper.Update()
 }
 
+func (l *PhaseManager) Phase() int {
+	return l.phase
+}
+
 func (l *PhaseManager) NextPhase() {
 	l.phase++
 	system.ScaleDuration(&l.enemySpawner.Frequency, 0.9)

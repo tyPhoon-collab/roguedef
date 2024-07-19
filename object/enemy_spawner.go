@@ -1,20 +1,23 @@
 package object
 
 import (
+	"roguedef/domain"
 	"roguedef/system"
 	"time"
 )
 
 type EnemySpawner struct {
-	game       *Game
-	spawnRange Rect
-	player     *Player
+	game         *Game
+	spawnRange   Rect
+	player       *Player
+	phaseManager *PhaseManager
 	*system.Looper
 }
 
 func (s *EnemySpawner) Register(g *Game, o *system.Object) {
 	s.game = g
 	s.player = g.ObjectByTag("player").Data.(*Player)
+	s.phaseManager = g.ObjectByTag("phase_manager").Data.(*PhaseManager)
 }
 
 func (s *EnemySpawner) Update() {
@@ -22,7 +25,9 @@ func (s *EnemySpawner) Update() {
 }
 
 func (s *EnemySpawner) addEnemy() {
-	enemy := NewEnemy().WithPlayer(s.player)
+	enemy := NewEnemy().WithPlayer(s.player).WithStatusModifier(func(st *domain.Status) {
+		domain.ModifyByPhase(st, s.phaseManager.Phase())
+	})
 	enemy.Pos = s.spawnRange.RandomPoint()
 	s.game.AddObjectWithData(enemy).WithTag("enemy")
 }

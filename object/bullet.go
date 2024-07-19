@@ -1,6 +1,7 @@
 package object
 
 import (
+	"roguedef/domain"
 	"roguedef/system"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -14,6 +15,10 @@ type Bullet struct {
 	sprite    *system.Sprite
 	velocity  *system.Velocity
 	intersect system.Intersector
+}
+
+func (b *Bullet) Attack(status *domain.Status) {
+	status.Hp -= 10
 }
 
 func (b *Bullet) Register(g *Game, o *system.Object) {
