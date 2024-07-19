@@ -1,21 +1,19 @@
 package object
 
 import (
-	"time"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 
+	"roguedef/domain"
 	"roguedef/system"
 )
 
 type Player struct {
 	*system.Transform
 	sprite        *system.Sprite
-	exp           int
-	level         int
 	bulletSpawner *BulletSpawner
 	ui            *UI
+	expManager    *domain.ExpManager
 }
 
 func (p *Player) Register(g *Game, o *system.Object) {
@@ -28,32 +26,21 @@ func (p *Player) Draw(screen *ebiten.Image) {
 }
 
 func (p *Player) AddExp(exp int) {
-	p.exp += exp
-	p.checkLevel()
-}
+	changed := p.expManager.AddExp(exp)
 
-func (p *Player) checkLevel() {
-	level := p.calculateLevel()
-
-	if level != p.level {
-		go p.setLevel(level)
+	if changed {
+		go p.onLevelChanged()
 	}
 }
 
-func (p *Player) setLevel(level int) {
-	p.level = level
-
+func (p *Player) onLevelChanged() {
 	system.TimeScale = 0
-	index := <-p.ui.ShowUpgradeSelectionPopup()
+	index := <-p.ui.ShowUpgradeSelection()
 	switch index {
 	default:
-		p.bulletSpawner.SetFrequency(time.Duration(1000.0/(level*5)+100) * time.Millisecond)
+		system.ScaleDuration(&p.bulletSpawner.Frequency, 0.8)
 	}
 	system.TimeScale = 1
-}
-
-func (p *Player) calculateLevel() int {
-	return p.exp/100 + 1
 }
 
 func NewPlayer(pos Vec2) *Player {
@@ -67,8 +54,11 @@ func NewPlayer(pos Vec2) *Player {
 
 	transform.MoveTo(pos)
 
-	return &Player{
-		Transform: transform,
-		sprite:    system.NewSprite(playerImage).WithTransform(transform),
+	player := &Player{
+		Transform:  transform,
+		sprite:     system.NewSprite(playerImage).WithTransform(transform),
+		expManager: domain.NewExpManager(),
 	}
+
+	return player
 }

@@ -5,13 +5,9 @@ import (
 )
 
 type Looper struct {
-	frequency      time.Duration
+	Frequency      time.Duration
 	timeAccumulate time.Duration
 	do             func()
-}
-
-func (l *Looper) SetFrequency(frequency time.Duration) {
-	l.frequency = frequency
 }
 
 func (l *Looper) Update() {
@@ -20,20 +16,25 @@ func (l *Looper) Update() {
 }
 
 func (l *Looper) doLoop() {
-	if l.frequency < 0 {
+	if l.Frequency < 0 {
 		return
 	}
-	if l.timeAccumulate >= l.frequency {
-		l.timeAccumulate -= l.frequency
+	if l.timeAccumulate >= l.Frequency {
+		l.timeAccumulate -= l.Frequency
 		l.do()
 		l.doLoop()
 	}
 }
 
+func (l *Looper) WithFrequency(frequency time.Duration) *Looper {
+	l.Frequency = frequency
+	return l
+}
+
 func NewLooper(frequency time.Duration, do func()) *Looper {
 	return &Looper{
 		do:             do,
-		frequency:      frequency,
+		Frequency:      frequency,
 		timeAccumulate: 0,
 	}
 }

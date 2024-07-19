@@ -2,6 +2,7 @@ package object
 
 import (
 	"roguedef/system"
+	"time"
 )
 
 type EnemySpawner struct {
@@ -13,6 +14,7 @@ type EnemySpawner struct {
 
 func (s *EnemySpawner) Register(g *Game, o *system.Object) {
 	s.game = g
+	s.player = g.ObjectByTag("player").Data.(*Player)
 }
 
 func (s *EnemySpawner) Update() {
@@ -25,16 +27,11 @@ func (s *EnemySpawner) addEnemy() {
 	s.game.AddObjectWithData(enemy).WithTag("enemy")
 }
 
-func (s *EnemySpawner) WithPlayer(player *Player) *EnemySpawner {
-	s.player = player
-	return s
-}
-
-func NewEnemySpawner(spawnRange Rect) *EnemySpawner {
+func NewEnemySpawner(spawnRange Rect, frequency time.Duration) *EnemySpawner {
 	s := &EnemySpawner{
 		spawnRange: spawnRange,
 	}
-	s.Looper = system.NewLooper(-1, s.addEnemy)
+	s.Looper = system.NewLooper(frequency, s.addEnemy)
 
 	return s
 }

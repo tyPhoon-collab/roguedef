@@ -6,6 +6,7 @@ import (
 	"roguedef/rect"
 	"roguedef/system"
 	"roguedef/vector"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -25,16 +26,18 @@ func main() {
 	enemySpawner := object.NewEnemySpawner(rect.Rect{
 		Min: Vec2{X: 20, Y: 0},
 		Max: Vec2{X: 300, Y: 10},
-	}).WithPlayer(player)
+	}, time.Second)
 	phaseManager := object.NewPhaseManager(enemySpawner)
+	gameOverChecker := object.NewGameOverChecker()
 	debug := object.NewDebug()
 
 	game.AddObjectWithData(background)
 	game.AddObjectWithData(ui).WithTag("ui")
 	game.AddObjectWithData(player).WithTag("player")
 	game.AddObjectWithData(bulletSpawner).WithTag("bullet_spawner")
-	game.AddObjectWithData(enemySpawner)
+	game.AddObjectWithData(enemySpawner).WithTag("enemy_spawner")
 	game.AddObjectWithData(phaseManager).WithTag("phase_manager")
+	game.AddObjectWithData(gameOverChecker)
 	game.AddObjectWithData(debug)
 
 	if err := ebiten.RunGame(game); err != nil {

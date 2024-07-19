@@ -9,6 +9,7 @@ type PhaseManager struct {
 	enemySpawner *EnemySpawner
 	game         *Game
 	phase        int
+	*system.Looper
 }
 
 func (l *PhaseManager) Register(g *Game, o *system.Object) {
@@ -16,26 +17,21 @@ func (l *PhaseManager) Register(g *Game, o *system.Object) {
 }
 
 func (l *PhaseManager) Update() {
-	frameCount := system.DurationToFrameCount(time.Duration(10) * time.Second)
-	if l.game.FrameCount()%frameCount == 0 {
-		l.NextPhase()
-	}
+	l.Looper.Update()
 }
 
 func (l *PhaseManager) NextPhase() {
-	l.SetPhase(l.phase + 1)
-}
-
-func (l *PhaseManager) SetPhase(phase int) {
-	l.phase = phase
-	l.enemySpawner.SetFrequency(time.Duration(5000.0/(l.phase*10)+100) * time.Millisecond)
+	l.phase++
+	system.ScaleDuration(&l.enemySpawner.Frequency, 0.9)
 }
 
 func NewPhaseManager(enemySpawner *EnemySpawner) *PhaseManager {
 	m := &PhaseManager{
 		enemySpawner: enemySpawner,
+		phase:        1,
 	}
-	m.SetPhase(1)
+
+	m.Looper = system.NewLooper(10*time.Second, m.NextPhase)
 
 	return m
 }

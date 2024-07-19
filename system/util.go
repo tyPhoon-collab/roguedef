@@ -23,3 +23,7 @@ func DurationToFrameCount(duration time.Duration) int {
 	}
 	return frameCount
 }
+
+func ScaleDuration(duration *time.Duration, mul float64) {
+	*duration = time.Duration(float64(*duration) * mul)
+}

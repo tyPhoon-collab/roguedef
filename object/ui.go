@@ -35,7 +35,51 @@ func (u *UI) Update() {
 	u.ui.Update()
 }
 
-func (u *UI) ShowUpgradeSelectionPopup() chan int {
+func (u *UI) ShowGameOver() chan int {
+	ch := make(chan int)
+
+	var removeFunc widget.RemoveWindowFunc
+
+	windowContent := widget.NewContainer(
+		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
+			widget.AnchorLayoutData{
+				HorizontalPosition: widget.AnchorLayoutPositionCenter,
+				VerticalPosition:   widget.AnchorLayoutPositionCenter,
+			},
+		)),
+		widget.ContainerOpts.Layout(
+			widget.NewRowLayout(
+				widget.RowLayoutOpts.Padding(widget.NewInsetsSimple(10)),
+				widget.RowLayoutOpts.Direction(widget.DirectionVertical),
+				widget.RowLayoutOpts.Spacing(10),
+			),
+		),
+	)
+
+	windowContent.AddChild(widget.NewButton(
+		u.bOpts("Play Again", func(args *widget.ButtonClickedEventArgs) {
+			removeFunc()
+			ch <- 0
+		})...,
+	))
+	windowContent.AddChild(widget.NewButton(
+		u.bOpts("Quit", func(args *widget.ButtonClickedEventArgs) {
+			removeFunc()
+			ch <- 1
+		})...,
+	))
+
+	window := widget.NewWindow(
+		widget.WindowOpts.Modal(),
+		widget.WindowOpts.Contents(windowContent),
+		widget.WindowOpts.CloseMode(widget.NONE),
+	)
+	removeFunc = u.ui.AddWindow(window)
+
+	return ch
+}
+
+func (u *UI) ShowUpgradeSelection() chan int {
 	ch := make(chan int)
 
 	var removeFunc widget.RemoveWindowFunc
@@ -59,7 +103,6 @@ func (u *UI) ShowUpgradeSelectionPopup() chan int {
 	for i := 0; i < 3; i++ {
 		windowContent.AddChild(widget.NewButton(
 			u.bOpts(fmt.Sprintf("Upgrade %d", i), func(args *widget.ButtonClickedEventArgs) {
-				fmt.Println("Upgrade", i)
 				removeFunc()
 				ch <- i
 			})...,
