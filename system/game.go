@@ -2,6 +2,7 @@ package system
 
 import (
 	"fmt"
+	"math"
 	"roguedef/ds"
 	"roguedef/task"
 	"slices"
@@ -32,7 +33,7 @@ func (g *Game) Intersects() map[iD]Intersector {
 }
 
 func (g *Game) Update() error {
-	g.executeTask()
+	g.executeTasks(g.frameCount)
 
 	for id, o := range g.updaters {
 		if g.objects[id].Active {
@@ -47,7 +48,7 @@ func (g *Game) Update() error {
 	return nil
 }
 
-func (g *Game) executeTask() {
+func (g *Game) executeTasks(by int) {
 	t, ok := g.tasks.Peek()
 
 	if !ok {
@@ -56,15 +57,15 @@ func (g *Game) executeTask() {
 
 	if !t.Active() {
 		_, _ = g.tasks.Pop()
-		g.executeTask()
+		g.executeTasks(by)
 	}
-	if t.ShouldExecute(g.frameCount) {
+	if t.ShouldExecute(by) {
 		err := t.Execute()
 		if err != nil {
 			panic(err)
 		}
 		_, _ = g.tasks.Pop()
-		g.executeTask() // recursion
+		g.executeTasks(by)
 	}
 }
 
@@ -229,6 +230,10 @@ func (g *Game) AddTaskPostFrame(do func() error) {
 func (g *Game) AddTaskAfter(after time.Duration, do func() error) {
 	delayFrameCount := float64(ebiten.TPS()) * after.Seconds()
 	g.AddTask(task.NewTask(g.frameCount+int(delayFrameCount), do))
+}
+
+func (g *Game) FlushTasks() {
+	g.executeTasks(math.MaxInt)
 }
 
 func NewGame() *Game {

@@ -28,7 +28,7 @@ func main() {
 	}
 }
 
-func buildTitle(scene *system.Scene) ebiten.Game {
+func buildTitle(scene *system.Scene) *system.Game {
 	g := system.NewGame()
 
 	ui := title.NewUI(scene)
@@ -38,7 +38,7 @@ func buildTitle(scene *system.Scene) ebiten.Game {
 	return g
 }
 
-func buildGame(scene *system.Scene) ebiten.Game {
+func buildGame(scene *system.Scene) *system.Game {
 	g := system.NewGame()
 
 	background := game.NewBackground()

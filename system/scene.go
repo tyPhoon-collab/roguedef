@@ -9,7 +9,7 @@ import (
 
 type context struct {
 	route string
-	game  ebiten.Game
+	game  *Game
 }
 
 type Scene struct {
@@ -31,7 +31,7 @@ func (s *Scene) Push(route string) error {
 }
 
 func (s *Scene) Reload() error {
-	c, _ := s.stack.Pop()
+	c, _ := s.pop()
 	return s.Push(c.route)
 }
 
@@ -40,7 +40,7 @@ func (s *Scene) Pop() bool {
 		return false
 	}
 
-	_, _ = s.stack.Pop()
+	s.pop()
 	return true
 }
 
@@ -57,7 +57,7 @@ func (s *Scene) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return s.Current().game.Layout(outsideWidth, outsideHeight)
 }
 
-func (s *Scene) buildGame(route string) (ebiten.Game, error) {
+func (s *Scene) buildGame(route string) (*Game, error) {
 	builder, ok := s.routes[route]
 	if !ok {
 		return nil, fmt.Errorf("route not found: %s", route)
@@ -79,6 +79,16 @@ func (s *Scene) push(route string) error {
 	s.stack.Push(c)
 
 	return nil
+}
+
+func (s *Scene) pop() (context, bool) {
+	c, ok := s.stack.Pop()
+	if !ok {
+		dc := context{}
+		return dc, false
+	}
+	c.game.FlushTasks()
+	return c, true
 }
 
 func NewScene(routes Routes, initRoute string) *Scene {
