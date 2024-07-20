@@ -41,7 +41,7 @@ func (p *Player) onLevelChanged() {
 	case upgrade.UpgradeFrequency:
 		system.ScaleDuration(&p.bulletSpawner.Frequency, 0.75)
 	case upgrade.UpgradePower:
-		p.bulletSpawner.bDamage = system.ScaleIntByFloat(p.bulletSpawner.bDamage, 1.5)
+		p.bulletSpawner.bDamage = system.MulIntByFloat(p.bulletSpawner.bDamage, 1.5)
 	case upgrade.UpgradeSpeed:
 		p.bulletSpawner.bSpeed *= 1.5
 	}

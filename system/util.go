@@ -29,7 +29,7 @@ func Round(f float64) int {
 	return int(math.Round(f))
 }
 
-func ScaleIntByFloat(i int, mul float64) int {
+func MulIntByFloat(i int, mul float64) int {
 	return Round(float64(i) * mul)
 }
 

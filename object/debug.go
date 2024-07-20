@@ -2,6 +2,7 @@ package object
 
 import (
 	"fmt"
+	"roguedef/domain"
 	"roguedef/system"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -35,13 +36,14 @@ func (d *Debug) Update() {
 func (d *Debug) Draw(screen *ebiten.Image) {
 	tps := ebiten.ActualTPS()
 	ebitenutil.DebugPrint(screen, fmt.Sprintf(
-		"TPS: %0.2f\nPhase: %d\nExp: %d\nLevel: %d\nBulletFreq: %d\nSpawnFreq: %d",
+		"TPS: %0.2f\nPhase: %d\nExp: %d\nLevel: %d\nBulletFreq: %d\nSpawnFreq: %d\nExpToNextLevel: %d",
 		tps,
 		d.phaseManager.phase,
 		d.player.expManager.Exp(),
 		d.player.expManager.Level(),
 		d.bulletSpawner.Frequency.Milliseconds(),
 		d.enemySpawner.Frequency.Milliseconds(),
+		domain.ExpToNextLevel(d.player.expManager.Level()),
 	))
 
 	if d.showIntersects {

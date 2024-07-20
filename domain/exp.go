@@ -2,6 +2,7 @@ package domain
 
 import (
 	"math"
+	"roguedef/system"
 )
 
 type ExpManager struct {
@@ -40,7 +41,7 @@ func (m *ExpManager) levelUp() bool {
 func ExpToNextLevel(level int) int {
 	base := 100
 	multiplier := 1.15
-	return base * int(math.Pow(multiplier, float64(level)))
+	return system.MulIntByFloat(base, math.Pow(multiplier, float64(level-1)))
 }
 
 func NewExpManager() *ExpManager {
