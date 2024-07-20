@@ -17,6 +17,16 @@ func main() {
 	ebiten.SetWindowSize(320, 640)
 	ebiten.SetWindowTitle("Hello World (Ebitengine Demo)")
 
+	routes := system.Routes{
+		"game": buildGame,
+	}
+
+	if err := ebiten.RunGame(system.NewScene(routes, "game")); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func buildGame() ebiten.Game {
 	game := system.NewGame()
 
 	background := object.NewBackground()
@@ -40,7 +50,5 @@ func main() {
 	game.AddObjectWithData(gameOverChecker)
 	game.AddObjectWithData(debug)
 
-	if err := ebiten.RunGame(game); err != nil {
-		log.Fatal(err)
-	}
+	return game
 }

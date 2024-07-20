@@ -10,7 +10,7 @@ import (
 )
 
 type Circle struct {
-	offset Vec2
+	offset vec
 	radius float64
 
 	*Transform
@@ -35,7 +35,7 @@ func (c *Circle) IntersectsCircle(other *Circle) bool {
 	return center.Sub(otherCenter).Len() < radius+otherRadius
 }
 
-func (c *Circle) ScaledCenter() Vec2 {
+func (c *Circle) ScaledCenter() vec {
 	return c.Pos.Add(c.offset.Mul(c.Scale))
 }
 

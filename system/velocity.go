@@ -1,7 +1,7 @@
 package system
 
 type Velocity struct {
-	Velocity Vec2
+	Velocity vec
 	*Transform
 }
 
@@ -9,7 +9,7 @@ func (v *Velocity) Update() {
 	v.Move(v.Velocity.MulScalar(TimeScale))
 }
 
-func (v *Velocity) With(velocity Vec2) *Velocity {
+func (v *Velocity) With(velocity vec) *Velocity {
 	v.Velocity = velocity
 	return v
 }
@@ -24,6 +24,6 @@ func (v *Velocity) WithTransform(transform *Transform) *Velocity {
 
 func NewVelocity() *Velocity {
 	return (&Velocity{
-		Velocity: Vec2{},
+		Velocity: vec{},
 	}).WithTransform(nil)
 }

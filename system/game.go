@@ -2,6 +2,7 @@ package system
 
 import (
 	"fmt"
+	"roguedef/ds"
 	"roguedef/task"
 	"slices"
 	"time"
@@ -18,7 +19,7 @@ type Game struct {
 	updaters          map[iD]Updater
 	intersects        map[iD]Intersector
 	intersectHandlers map[iD]IntersectHandler
-	taskQueue         []task.Task
+	tasks             *ds.Queue[task.Task]
 	frameCount        int
 }
 
@@ -47,21 +48,23 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) executeTask() {
-	if len(g.taskQueue) > 0 {
-		t := g.taskQueue[0]
+	t, ok := g.tasks.Peek()
 
-		if !t.Active() {
-			g.taskQueue = g.taskQueue[1:]
-			g.executeTask()
+	if !ok {
+		return
+	}
+
+	if !t.Active() {
+		_, _ = g.tasks.Pop()
+		g.executeTask()
+	}
+	if t.ShouldExecute(g.frameCount) {
+		err := t.Execute()
+		if err != nil {
+			panic(err)
 		}
-		if t.ShouldExecute(g.frameCount) {
-			err := t.Execute()
-			if err != nil {
-				panic(err)
-			}
-			g.taskQueue = g.taskQueue[1:]
-			g.executeTask() // recursion
-		}
+		_, _ = g.tasks.Pop()
+		g.executeTask() // recursion
 	}
 }
 
@@ -111,7 +114,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return 320, 640
 }
 
-func (g *Game) IsOutside(pos Vec2) bool {
+func (g *Game) IsOutside(pos vec) bool {
 	x, y := pos.X, pos.Y
 	return x < 0 || y < 0 || x >= 320 || y >= 640
 }
@@ -211,14 +214,14 @@ func (g *Game) RemoveObject(id iD) {
 	})
 }
 
-func (g *Game) AddTask(t task.Task) {
-	for i := 0; i < len(g.taskQueue); i++ {
-		if g.taskQueue[i].At() > t.At() {
-			g.taskQueue = slices.Insert(g.taskQueue, i, t)
+func (g *Game) AddTask(task task.Task) {
+	for i, t := range g.tasks.Data() {
+		if t.At() > task.At() {
+			g.tasks.Insert(i, task)
 			return
 		}
 	}
-	g.taskQueue = append(g.taskQueue, t)
+	g.tasks.Push(task)
 }
 func (g *Game) AddTaskPostFrame(do func() error) {
 	g.AddTask(task.NewTask(g.frameCount, do))
@@ -235,7 +238,7 @@ func NewGame() *Game {
 		updaters:          make(map[iD]Updater),
 		intersects:        make(map[iD]Intersector),
 		intersectHandlers: make(map[iD]IntersectHandler),
-		taskQueue:         make([]task.Task, 0),
+		tasks:             ds.NewQueue[task.Task](),
 	}
 
 	return game
