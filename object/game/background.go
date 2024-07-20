@@ -1,4 +1,4 @@
-package object
+package game
 
 import (
 	"roguedef/system"

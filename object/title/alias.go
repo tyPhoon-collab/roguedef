@@ -1,4 +1,4 @@
-package object
+package title
 
 import (
 	"roguedef/rect"
@@ -6,6 +6,6 @@ import (
 	"roguedef/vector"
 )
 
-type Vec2 = vector.Vec2
-type Rect = rect.Rect
 type Game = system.Game
+type Rect = rect.Rect
+type Vec2 = vector.Vec2

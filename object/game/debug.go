@@ -1,4 +1,4 @@
-package object
+package game
 
 import (
 	"fmt"
@@ -13,6 +13,7 @@ import (
 type Debug struct {
 	showIntersects bool
 	game           *Game
+	ui             *UI
 	phaseManager   *PhaseManager
 	player         *Player
 	bulletSpawner  *BulletSpawner
@@ -21,6 +22,7 @@ type Debug struct {
 
 func (d *Debug) Register(g *Game, o *system.Object) {
 	d.game = g
+	d.ui = g.ObjectByTag("ui").Data.(*UI)
 	d.phaseManager = g.ObjectByTag("phase_manager").Data.(*PhaseManager)
 	d.player = g.ObjectByTag("player").Data.(*Player)
 	d.bulletSpawner = g.ObjectByTag("bullet_spawner").Data.(*BulletSpawner)
@@ -30,6 +32,10 @@ func (d *Debug) Register(g *Game, o *system.Object) {
 func (d *Debug) Update() {
 	if inpututil.IsKeyJustPressed(ebiten.KeyI) {
 		d.showIntersects = !d.showIntersects
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyD) {
+		go d.ui.WaitShowGameOver()
 	}
 }
 

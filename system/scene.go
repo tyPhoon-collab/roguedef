@@ -1,20 +1,38 @@
 package system
 
 import (
+	"fmt"
 	"roguedef/ds"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type Scene struct {
-	routes  Routes
-	current ebiten.Game
-	stack   *ds.Stack[ebiten.Game]
+type context struct {
+	route string
+	game  ebiten.Game
 }
 
-func (s *Scene) Push(route string) {
-	s.stack.Push(s.current)
-	s.current = s.routes[route]()
+type Scene struct {
+	routes Routes
+	stack  *ds.Stack[context]
+}
+
+func (s *Scene) Current() context {
+	c, ok := s.stack.Peek()
+	if !ok {
+		panic("stack is empty")
+	}
+	return c
+}
+
+func (s *Scene) Push(route string) error {
+	s.push(route)
+	return nil
+}
+
+func (s *Scene) Reload() error {
+	c, _ := s.stack.Pop()
+	return s.Push(c.route)
 }
 
 func (s *Scene) Pop() bool {
@@ -23,31 +41,55 @@ func (s *Scene) Pop() bool {
 	}
 
 	_, _ = s.stack.Pop()
-	s.current, _ = s.stack.Peek()
 	return true
 }
 
 func (s *Scene) Update() error {
-	err := s.current.Update()
+	err := s.Current().game.Update()
 	return err
 }
 
 func (s *Scene) Draw(screen *ebiten.Image) {
-	s.current.Draw(screen)
+	s.Current().game.Draw(screen)
 }
 
 func (s *Scene) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return s.current.Layout(outsideWidth, outsideHeight)
+	return s.Current().game.Layout(outsideWidth, outsideHeight)
+}
+
+func (s *Scene) buildGame(route string) (ebiten.Game, error) {
+	builder, ok := s.routes[route]
+	if !ok {
+		return nil, fmt.Errorf("route not found: %s", route)
+	}
+	return builder(s), nil
+}
+
+func (s *Scene) push(route string) error {
+	game, err := s.buildGame(route)
+
+	if err != nil {
+		return err
+	}
+
+	c := context{
+		route: route,
+		game:  game,
+	}
+	s.stack.Push(c)
+
+	return nil
 }
 
 func NewScene(routes Routes, initRoute string) *Scene {
 	s := &Scene{
-		routes:  routes,
-		current: routes[initRoute](),
-		stack:   ds.NewStack[ebiten.Game](),
+		routes: routes,
+		stack:  ds.NewStack[context](),
 	}
 
-	s.stack.Push(s.current)
+	if err := s.Push(initRoute); err != nil {
+		panic(err)
+	}
 
 	return s
 }

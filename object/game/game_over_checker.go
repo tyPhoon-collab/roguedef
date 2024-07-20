@@ -1,4 +1,4 @@
-package object
+package game
 
 import "roguedef/system"
 
@@ -16,16 +16,10 @@ func (c *GameOverChecker) Update() {
 	for o := range c.game.ObjectsByTag("enemy") {
 		if enemy, ok := o.Data.(*Enemy); ok {
 			if c.game.IsOutside(enemy.Pos) {
-				go c.showGameOver()
+				go c.ui.WaitShowGameOver()
 			}
 		}
 	}
-}
-
-func (c *GameOverChecker) showGameOver() {
-	system.TimeScale = 0
-	<-c.ui.ShowGameOver()
-	system.TimeScale = 1
 }
 
 func NewGameOverChecker() *GameOverChecker {
