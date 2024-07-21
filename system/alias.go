@@ -1,6 +1,8 @@
 package system
 
-import "roguedef/ds"
+import (
+	"roguedef/ds"
+)
 
 type vec = ds.Vec2
 type gameBuilder = func(*Scene) *Game

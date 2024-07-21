@@ -26,7 +26,8 @@ func (s *EnemySpawner) Update() {
 
 func (s *EnemySpawner) addEnemy() {
 	// enemy := NewEnemyFromResource(resources.GopherImage).
-	enemy := NewEnemyFromVector().
+	// enemy := NewEnemyTriangle(24).
+	enemy := NewEnemySquare(24).
 		WithPlayer(s.player).
 		WithStatusModifier(func(st *domain.Status) {
 			domain.ModifyStatusByPhase(st, s.phaseManager.Phase())

@@ -99,3 +99,14 @@ func NewVectorDrawerTriangle(size float64) *VectorDrawer {
 		NewLineOp(vec{X: -size / 2.0, Y: -h / 3.0}),
 	)
 }
+
+func NewVectorDrawerSquare(size float64) *VectorDrawer {
+	// half size
+	hSize := size / 2.0
+	return NewVectorDrawer(
+		NewMoveOp(vec{X: hSize, Y: hSize}),
+		NewLineOp(vec{X: hSize, Y: -hSize}),
+		NewLineOp(vec{X: -hSize, Y: -hSize}),
+		NewLineOp(vec{X: -hSize, Y: hSize}),
+	)
+}

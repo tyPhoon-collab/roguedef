@@ -21,3 +21,6 @@ var PendantImage []byte
 
 //go:embed images/bullet.png
 var BulletImage []byte
+
+//go:embed images/ui/button_tile.png
+var ButtonTileImage []byte

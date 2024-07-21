@@ -87,12 +87,22 @@ func NewEnemyFromResource(data []byte) *Enemy {
 	)
 }
 
-func NewEnemyFromVector() *Enemy {
+func NewEnemyTriangle(size float64) *Enemy {
 	transform := system.NewTransform()
 
 	return NewEnemy(
 		transform,
-		system.NewVectorDrawerTriangle(20).WithTransform(transform),
-		system.NewCircle(10).WithTransform(transform),
+		system.NewVectorDrawerTriangle(size).WithTransform(transform),
+		system.NewCircle(size/2).WithTransform(transform),
+	)
+}
+
+func NewEnemySquare(size float64) *Enemy {
+	transform := system.NewTransform()
+
+	return NewEnemy(
+		transform,
+		system.NewVectorDrawerSquare(size).WithTransform(transform),
+		system.NewCircle(size/2).WithTransform(transform),
 	)
 }

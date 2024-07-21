@@ -1,6 +1,7 @@
 package system
 
 import (
+	img "image"
 	"image/color"
 	"roguedef/resources"
 
@@ -74,12 +75,18 @@ func NewUIEmbed(container *widget.Container) *UIEmbed {
 }
 
 func LoadButtonImage() (*widget.ButtonImage, error) {
-	idle := image.NewNineSliceSimple(LoadImage(resources.ButtonImage), 4, 8)
+	// idle := image.NewNineSliceSimple(LoadImage(resources.ButtonImage), 4, 8)
+	tile := LoadImage(resources.ButtonTileImage)
 
+	images := make([]*image.NineSlice, 4)
+	for i := range 4 {
+		images[i] = image.NewNineSliceSimple(tile.SubImage(img.Rect(i*16, 0, (i+1)*16, 16)).(*ebiten.Image), 4, 8)
+	}
 	return &widget.ButtonImage{
-		Idle:    idle,
-		Hover:   idle,
-		Pressed: idle,
+		Idle:     images[0],
+		Hover:    images[1],
+		Pressed:  images[2],
+		Disabled: images[3],
 	}, nil
 }
 
