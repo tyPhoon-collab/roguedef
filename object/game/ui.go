@@ -57,6 +57,7 @@ func (u *UI) buildGameOverContainer(ch chan struct{}) *widget.Container {
 		widget.ContainerOpts.Layout(widget.NewAnchorLayout()),
 	)
 	content := widget.NewContainer(
+		u.BackgroundImage(),
 		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
 			widget.AnchorLayoutData{
 				HorizontalPosition: widget.AnchorLayoutPositionCenter,
@@ -65,7 +66,7 @@ func (u *UI) buildGameOverContainer(ch chan struct{}) *widget.Container {
 		)),
 		widget.ContainerOpts.Layout(
 			widget.NewRowLayout(
-				widget.RowLayoutOpts.Padding(widget.NewInsetsSimple(10)),
+				widget.RowLayoutOpts.Padding(widget.NewInsetsSimple(20)),
 				widget.RowLayoutOpts.Direction(widget.DirectionVertical),
 				widget.RowLayoutOpts.Spacing(10),
 			),
@@ -98,6 +99,7 @@ func (u *UI) buildUpgradeSelectionContainer(ch chan upgrade.Upgrade) *widget.Con
 	)
 
 	content := widget.NewContainer(
+		u.BackgroundImage(),
 		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
 			widget.AnchorLayoutData{
 				HorizontalPosition: widget.AnchorLayoutPositionCenter,
@@ -106,7 +108,7 @@ func (u *UI) buildUpgradeSelectionContainer(ch chan upgrade.Upgrade) *widget.Con
 		)),
 		widget.ContainerOpts.Layout(
 			widget.NewRowLayout(
-				widget.RowLayoutOpts.Padding(widget.NewInsetsSimple(10)),
+				widget.RowLayoutOpts.Padding(widget.NewInsetsSimple(20)),
 				widget.RowLayoutOpts.Direction(widget.DirectionVertical),
 				widget.RowLayoutOpts.Spacing(10),
 			),

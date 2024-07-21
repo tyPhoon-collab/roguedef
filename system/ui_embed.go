@@ -20,6 +20,12 @@ type UIEmbed struct {
 	buttonImage *widget.ButtonImage
 }
 
+func (u *UIEmbed) BackgroundImage() widget.ContainerOpt {
+	img := LoadImage(resources.ButtonImage)
+	bg := widget.ContainerOpts.BackgroundImage(image.NewNineSliceSimple(img, 4, 8))
+	return bg
+}
+
 func (u *UIEmbed) BasicButtonOpts(text string, do func(args *widget.ButtonClickedEventArgs)) widget.ButtonOpt {
 	buttonTextColor := &widget.ButtonTextColor{
 		Idle: color.RGBA{255, 255, 255, 255},

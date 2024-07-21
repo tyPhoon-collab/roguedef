@@ -29,7 +29,7 @@ func (t EnemyType) Status() EnemyStatus {
 			Status: Status{
 				Hp: 5,
 			},
-			Exp:   5,
+			Exp:   7,
 			Speed: 2,
 		}
 	}
