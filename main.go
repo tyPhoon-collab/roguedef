@@ -2,17 +2,17 @@ package main
 
 import (
 	"log"
+	"roguedef/ds"
 	"roguedef/object/game"
 	"roguedef/object/title"
 	"roguedef/rect"
 	"roguedef/system"
-	"roguedef/vector"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type Vec2 = vector.Vec2
+type Vec2 = ds.Vec2
 
 const width, height = 320, 640
 

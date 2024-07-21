@@ -62,6 +62,6 @@ func NewBullet(vel Vec2, status *domain.AttackStatus) *Bullet {
 		AttackStatus: status,
 		sprite:       system.NewSprite(img).WithTransform(transform),
 		velocity:     system.NewVelocity().WithTransform(transform).With(vel),
-		intersect:    system.NewCircle().WithTransform(transform).FromImage(img),
+		intersect:    system.NewCircleFromImage(img).WithTransform(transform),
 	}
 }

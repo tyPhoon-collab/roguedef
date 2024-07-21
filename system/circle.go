@@ -64,17 +64,16 @@ func (c *Circle) WithRadius(radius float64) *Circle {
 	return c
 }
 
-func (c *Circle) FromImage(image *ebiten.Image) *Circle {
-	circle := calculateRadiusFromImage(image)
-	c.radius = circle
-
-	return c
-}
-
 func calculateRadiusFromImage(image *ebiten.Image) float64 {
 	return float64(image.Bounds().Dx()) / 2
 }
 
-func NewCircle() *Circle {
-	return (&Circle{}).WithTransform(nil)
+func NewCircle(radius float64) *Circle {
+	return (&Circle{radius: radius}).WithTransform(nil)
+}
+
+func NewCircleFromImage(image *ebiten.Image) *Circle {
+	radius := calculateRadiusFromImage(image)
+
+	return NewCircle(radius).WithTransform(nil)
 }

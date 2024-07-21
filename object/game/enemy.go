@@ -5,18 +5,17 @@ import (
 	"roguedef/system"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type Enemy struct {
 	*system.Transform
 	*domain.Status
-	game      *Game
-	object    *system.Object
-	sprite    *system.Sprite
-	velocity  *system.Velocity
-	intersect system.Intersector
-	player    *Player
+	game        *Game
+	object      *system.Object
+	velocity    *system.Velocity
+	intersector system.Intersector
+	player      *Player
+	drawer      system.Drawer
 }
 
 func (e *Enemy) Register(g *Game, o *system.Object) {
@@ -25,7 +24,7 @@ func (e *Enemy) Register(g *Game, o *system.Object) {
 }
 
 func (e *Enemy) Intersect() system.Intersector {
-	return e.intersect
+	return e.intersector
 }
 
 func (e *Enemy) Update() {
@@ -37,7 +36,7 @@ func (e *Enemy) Update() {
 }
 
 func (e *Enemy) Draw(screen *ebiten.Image) {
-	e.sprite.Draw(screen)
+	e.drawer.Draw(screen)
 }
 
 func (e *Enemy) OnIntersect(other *system.Object) {
@@ -65,19 +64,35 @@ func (o *Enemy) WithStatusModifier(modifier func(*domain.Status)) *Enemy {
 	return o
 }
 
-func NewEnemy() *Enemy {
-	enemyImage, _, err := ebitenutil.NewImageFromFile("resources/images/gopher.png")
-	if err != nil {
-		panic(err)
+func NewEnemy(transform *system.Transform, drawer system.Drawer, intersector system.Intersector) *Enemy {
+	return &Enemy{
+		Transform:   transform,
+		drawer:      drawer,
+		velocity:    system.NewVelocity().WithTransform(transform).With(Vec2{X: 0, Y: 1}),
+		intersector: intersector,
+		Status:      domain.NewStatus(10),
 	}
+}
+
+func NewEnemyFromResource(data []byte) *Enemy {
 	transform := system.NewTransform()
 	transform.Scale = transform.Scale.MulScalar(0.5)
 
-	return &Enemy{
-		Transform: transform,
-		sprite:    system.NewSprite(enemyImage).WithTransform(transform),
-		velocity:  system.NewVelocity().WithTransform(transform).With(Vec2{X: 0, Y: 1}),
-		intersect: system.NewCircle().WithTransform(transform).FromImage(enemyImage),
-		Status:    domain.NewStatus(10),
-	}
+	img := system.LoadImage(data)
+
+	return NewEnemy(
+		transform,
+		system.NewSprite(img).WithTransform(transform),
+		system.NewCircleFromImage(img).WithTransform(transform),
+	)
+}
+
+func NewEnemyFromVector() *Enemy {
+	transform := system.NewTransform()
+
+	return NewEnemy(
+		transform,
+		system.NewVectorDrawerTriangle(20).WithTransform(transform),
+		system.NewCircle(10).WithTransform(transform),
+	)
 }

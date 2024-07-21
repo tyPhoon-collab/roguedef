@@ -1,4 +1,4 @@
-package vector
+package ds
 
 import (
 	"fmt"
@@ -95,4 +95,8 @@ func (v Vec2) DirTo(v2 Vec2) (Vec2, error) {
 
 func (v Vec2) String() string {
 	return fmt.Sprintf("(%f, %f)", v.X, v.Y)
+}
+
+func Unpack[T int | float64 | float32](v Vec2) (T, T) {
+	return T(v.X), T(v.Y)
 }

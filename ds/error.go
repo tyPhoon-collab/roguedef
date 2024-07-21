@@ -1,4 +1,4 @@
-package vector
+package ds
 
 type ZeroDivisionError struct{}
 

@@ -2,10 +2,10 @@ package rect
 
 import (
 	"math/rand/v2"
-	"roguedef/vector"
+	"roguedef/ds"
 )
 
-type Vec2 = vector.Vec2
+type Vec2 = ds.Vec2
 
 type Rect struct {
 	Min Vec2

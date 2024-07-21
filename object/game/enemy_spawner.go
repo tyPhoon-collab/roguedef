@@ -25,9 +25,12 @@ func (s *EnemySpawner) Update() {
 }
 
 func (s *EnemySpawner) addEnemy() {
-	enemy := NewEnemy().WithPlayer(s.player).WithStatusModifier(func(st *domain.Status) {
-		domain.ModifyStatusByPhase(st, s.phaseManager.Phase())
-	})
+	// enemy := NewEnemyFromResource(resources.GopherImage).
+	enemy := NewEnemyFromVector().
+		WithPlayer(s.player).
+		WithStatusModifier(func(st *domain.Status) {
+			domain.ModifyStatusByPhase(st, s.phaseManager.Phase())
+		})
 	enemy.Pos = s.spawnRange.RandomPoint()
 	s.game.AddObjectWithData(enemy).WithTag("enemy")
 }

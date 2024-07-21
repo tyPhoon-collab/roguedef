@@ -2,17 +2,7 @@ package system
 
 import (
 	"github.com/google/uuid"
-	"github.com/hajimehoshi/ebiten/v2"
 )
-
-type Drawer interface {
-	Draw(screen *ebiten.Image)
-	Priority() int
-}
-
-type Updater interface {
-	Update()
-}
 
 type OnRemoveHandler interface {
 	OnRemove()

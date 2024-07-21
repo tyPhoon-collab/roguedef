@@ -1,9 +1,7 @@
 package system
 
-import (
-	"roguedef/vector"
-)
+import "roguedef/ds"
 
-type vec = vector.Vec2
+type vec = ds.Vec2
 type gameBuilder = func(*Scene) *Game
 type Routes = map[string]gameBuilder
