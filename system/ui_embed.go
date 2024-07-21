@@ -46,6 +46,10 @@ func (u *UIEmbed) UI() *ebitenui.UI {
 	return u.ui
 }
 
+func (u *UIEmbed) Container() *widget.Container {
+	return u.ui.Container
+}
+
 func (u *UIEmbed) Draw(screen *ebiten.Image) {
 	u.ui.Draw(screen)
 }

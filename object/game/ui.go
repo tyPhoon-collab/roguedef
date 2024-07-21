@@ -23,45 +23,8 @@ func (u *UI) WaitShowGameOver() {
 func (u *UI) ShowGameOver() chan struct{} {
 	ch := make(chan struct{})
 
-	var removeFunc widget.RemoveWindowFunc
-
-	windowContent := widget.NewContainer(
-		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
-			widget.AnchorLayoutData{
-				HorizontalPosition: widget.AnchorLayoutPositionCenter,
-				VerticalPosition:   widget.AnchorLayoutPositionCenter,
-			},
-		)),
-		widget.ContainerOpts.Layout(
-			widget.NewRowLayout(
-				widget.RowLayoutOpts.Padding(widget.NewInsetsSimple(10)),
-				widget.RowLayoutOpts.Direction(widget.DirectionVertical),
-				widget.RowLayoutOpts.Spacing(10),
-			),
-		),
-	)
-
-	windowContent.AddChild(widget.NewButton(
-		u.BasicButtonOpts("Play Again", func(args *widget.ButtonClickedEventArgs) {
-			removeFunc()
-			u.scene.Reload()
-			ch <- struct{}{}
-		}),
-	))
-	windowContent.AddChild(widget.NewButton(
-		u.BasicButtonOpts("Quit", func(args *widget.ButtonClickedEventArgs) {
-			removeFunc()
-			u.scene.Pop()
-			ch <- struct{}{}
-		}),
-	))
-
-	window := widget.NewWindow(
-		widget.WindowOpts.Modal(),
-		widget.WindowOpts.Contents(windowContent),
-		widget.WindowOpts.CloseMode(widget.NONE),
-	)
-	removeFunc = u.UI().AddWindow(window)
+	c := u.buildGameOverContainer(ch)
+	u.Container().AddChild(c)
 
 	return ch
 }
@@ -69,9 +32,24 @@ func (u *UI) ShowGameOver() chan struct{} {
 func (u *UI) ShowUpgradeSelection() chan upgrade.Upgrade {
 	ch := make(chan upgrade.Upgrade)
 
-	var removeFunc widget.RemoveWindowFunc
+	c := u.buildUpgradeSelectionContainer(ch)
+	u.Container().AddChild(c)
 
-	windowContent := widget.NewContainer(
+	return ch
+}
+
+func NewUI(scene *system.Scene) *UI {
+	rootContainer := widget.NewContainer(
+		widget.ContainerOpts.Layout(widget.NewStackedLayout()),
+	)
+	return &UI{system.NewUIEmbed(rootContainer), scene}
+}
+
+func (u *UI) buildGameOverContainer(ch chan struct{}) *widget.Container {
+	container := widget.NewContainer(
+		widget.ContainerOpts.Layout(widget.NewAnchorLayout()),
+	)
+	content := widget.NewContainer(
 		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
 			widget.AnchorLayoutData{
 				HorizontalPosition: widget.AnchorLayoutPositionCenter,
@@ -87,29 +65,72 @@ func (u *UI) ShowUpgradeSelection() chan upgrade.Upgrade {
 		),
 	)
 
+	container.AddChild(content)
+
+	content.AddChild(widget.NewButton(
+		widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
+			widget.RowLayoutData{
+				Position: widget.RowLayoutPositionCenter,
+			},
+		)),
+		u.BasicButtonOpts("Play Again", func(args *widget.ButtonClickedEventArgs) {
+			u.scene.Reload()
+			ch <- struct{}{}
+			u.Container().RemoveChild(content)
+		}),
+	))
+	content.AddChild(widget.NewButton(
+		widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
+			widget.RowLayoutData{
+				Position: widget.RowLayoutPositionCenter,
+			},
+		)),
+		u.BasicButtonOpts("Quit", func(args *widget.ButtonClickedEventArgs) {
+			u.scene.Pop()
+			ch <- struct{}{}
+			u.Container().RemoveChild(container)
+		}),
+	))
+
+	return container
+}
+
+func (u *UI) buildUpgradeSelectionContainer(ch chan upgrade.Upgrade) *widget.Container {
+	container := widget.NewContainer(
+		widget.ContainerOpts.Layout(widget.NewAnchorLayout()),
+	)
+
+	content := widget.NewContainer(
+		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
+			widget.AnchorLayoutData{
+				HorizontalPosition: widget.AnchorLayoutPositionCenter,
+				VerticalPosition:   widget.AnchorLayoutPositionCenter,
+			},
+		)),
+		widget.ContainerOpts.Layout(
+			widget.NewRowLayout(
+				widget.RowLayoutOpts.Padding(widget.NewInsetsSimple(10)),
+				widget.RowLayoutOpts.Direction(widget.DirectionVertical),
+				widget.RowLayoutOpts.Spacing(10),
+			),
+		),
+	)
+
+	container.AddChild(content)
+
 	for _, v := range upgrade.Values() {
-		windowContent.AddChild(widget.NewButton(
+		content.AddChild(widget.NewButton(
+			widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
+				widget.RowLayoutData{
+					Position: widget.RowLayoutPositionCenter,
+				},
+			)),
 			u.BasicButtonOpts(v.String(), func(args *widget.ButtonClickedEventArgs) {
-				removeFunc()
 				ch <- v
+				u.Container().RemoveChild(container)
 			}),
 		))
 	}
 
-	window := widget.NewWindow(
-		widget.WindowOpts.Modal(),
-		widget.WindowOpts.Contents(windowContent),
-		widget.WindowOpts.CloseMode(widget.NONE),
-	)
-
-	removeFunc = u.UI().AddWindow(window)
-
-	return ch
-}
-
-func NewUI(scene *system.Scene) *UI {
-	rootContainer := widget.NewContainer(
-		widget.ContainerOpts.Layout(widget.NewAnchorLayout()),
-	)
-	return &UI{system.NewUIEmbed(rootContainer), scene}
+	return container
 }
