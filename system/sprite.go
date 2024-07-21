@@ -46,6 +46,11 @@ func (s *Sprite) WithAlignment(alignment Alignment) *Sprite {
 	return s
 }
 
+func NewEmptySprite() *Sprite {
+	img := ebiten.NewImage(1, 1)
+	return (&Sprite{Image: img}).WithTransform(nil).WithAlignment(AlignCenter)
+}
+
 func NewSprite(image *ebiten.Image) *Sprite {
 	return (&Sprite{
 		Image: image,

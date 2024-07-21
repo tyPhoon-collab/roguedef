@@ -2,10 +2,10 @@ package game
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 
 	"roguedef/domain"
 	"roguedef/domain/upgrade"
+	"roguedef/resources"
 	"roguedef/system"
 )
 
@@ -49,20 +49,14 @@ func (p *Player) onLevelChanged() {
 }
 
 func NewPlayer(pos Vec2) *Player {
-	playerImage, _, err := ebitenutil.NewImageFromFile("resources/images/player_back.png")
-
-	if err != nil {
-		panic(err)
-	}
-
+	img := system.LoadImage(resources.PlayerBackImage)
 	transform := system.NewTransform()
-
-	transform.Scale = transform.Scale.MulScalar(0.15)
+	transform.Scale = transform.Scale.MulScalar(4)
 	transform.MoveTo(pos)
 
 	player := &Player{
 		Transform:  transform,
-		sprite:     system.NewSprite(playerImage).WithTransform(transform),
+		sprite:     system.NewSprite(img).WithTransform(transform),
 		expManager: domain.NewExpManager(),
 	}
 

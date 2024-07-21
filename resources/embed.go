@@ -16,5 +16,8 @@ var PlayerBackImage []byte
 //go:embed images/player_front.png
 var PlayerFrontImage []byte
 
+//go:embed images/pendant8x8.png
+var PendantImage []byte
+
 //go:embed images/bullet.png
 var BulletImage []byte

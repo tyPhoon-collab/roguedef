@@ -55,7 +55,7 @@ func (b *Bullet) OnIntersect(other *system.Object) {
 func NewBullet(vel Vec2, status *domain.AttackStatus) *Bullet {
 	img := system.LoadImage(resources.BulletImage)
 	transform := system.NewTransform()
-	transform.Scale = transform.Scale.MulScalar(0.2)
+	transform.Scale = transform.Scale.MulScalar(2)
 
 	return &Bullet{
 		Transform:    transform,

@@ -11,13 +11,13 @@ import (
 )
 
 type Debug struct {
-	showIntersects bool
-	game           *Game
-	ui             *UI
-	phaseManager   *PhaseManager
-	player         *Player
-	bulletSpawner  *BulletSpawner
-	enemySpawner   *EnemySpawner
+	showInfo      bool
+	game          *Game
+	ui            *UI
+	phaseManager  *PhaseManager
+	player        *Player
+	bulletSpawner *BulletSpawner
+	enemySpawner  *EnemySpawner
 }
 
 func (d *Debug) Register(g *Game, o *system.Object) {
@@ -31,7 +31,7 @@ func (d *Debug) Register(g *Game, o *system.Object) {
 
 func (d *Debug) Update() {
 	if inpututil.IsKeyJustPressed(ebiten.KeyI) {
-		d.showIntersects = !d.showIntersects
+		d.showInfo = !d.showInfo
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyD) {
@@ -40,6 +40,10 @@ func (d *Debug) Update() {
 }
 
 func (d *Debug) Draw(screen *ebiten.Image) {
+	if !d.showInfo {
+		return
+	}
+
 	tps := ebiten.ActualTPS()
 	ebitenutil.DebugPrint(screen, fmt.Sprintf(
 		"TPS: %0.2f\nPhase: %d\nExp: %d\nLevel: %d\nBulletFreq: %d\nSpawnFreq: %d\nExpToNextLevel: %d",
@@ -52,10 +56,8 @@ func (d *Debug) Draw(screen *ebiten.Image) {
 		domain.ExpToNextLevel(d.player.expManager.Level()),
 	))
 
-	if d.showIntersects {
-		for _, o := range d.game.Intersects() {
-			o.Draw(screen)
-		}
+	for _, o := range d.game.Intersects() {
+		o.Draw(screen)
 	}
 }
 

@@ -67,11 +67,12 @@ func (r *BulletSpawner) calculateTarget() (Vec2, bool) {
 }
 
 func NewBulletSpawner(pos Vec2) *BulletSpawner {
-	img := system.LoadImage(resources.BulletImage)
+	img := system.LoadImage(resources.PendantImage)
 	transform := system.NewTransform()
 	transform.MoveTo(pos)
-	transform.Scale = transform.Scale.MulScalar(0.1)
+	transform.Scale = transform.Scale.MulScalar(4)
 	sprite := system.NewSprite(img).WithTransform(transform)
+	// sprite := system.NewEmptySprite().WithTransform(transform)
 
 	s := &BulletSpawner{bSpeed: 10, bDamage: 10, Sprite: sprite, transform: transform}
 
