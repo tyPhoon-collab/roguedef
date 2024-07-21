@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"roguedef/domain/upgrade"
 	"roguedef/system"
 
@@ -9,10 +10,20 @@ import (
 
 type UI struct {
 	*system.UIEmbed
-	scene *system.Scene
+	scene        *system.Scene
+	phaseText    *widget.Text
+	phaseManager *PhaseManager
 }
 
-func (u *UI) Register(g *Game, o *system.Object) {}
+func (u *UI) Register(g *Game, o *system.Object) {
+	u.phaseManager = g.ObjectByTag("phase_manager").Data.(*PhaseManager)
+}
+
+func (u *UI) Update() {
+	u.UIEmbed.Update()
+
+	u.phaseText.Label = fmt.Sprintf("Phase: %d", u.phaseManager.Phase())
+}
 
 func (u *UI) WaitShowGameOver() {
 	system.TimeScale = 0
@@ -46,10 +57,29 @@ func (u *UI) ShowUpgradeSelection() chan upgrade.Upgrade {
 }
 
 func NewUI(scene *system.Scene) *UI {
+
 	rootContainer := widget.NewContainer(
 		widget.ContainerOpts.Layout(widget.NewStackedLayout()),
 	)
-	return &UI{system.NewUIEmbed(rootContainer), scene}
+
+	u := &UI{UIEmbed: system.NewUIEmbed(rootContainer), scene: scene}
+
+	statusContainer := widget.NewContainer(
+		widget.ContainerOpts.Layout(widget.NewRowLayout(
+			widget.RowLayoutOpts.Direction(widget.DirectionHorizontal),
+			widget.RowLayoutOpts.Spacing(10),
+			widget.RowLayoutOpts.Padding(widget.NewInsetsSimple(10)),
+		)),
+	)
+	rootContainer.AddChild(statusContainer)
+
+	u.phaseText = widget.NewText(
+		u.BasicTextOpts(""),
+	)
+	statusContainer.AddChild(u.phaseText)
+
+	return u
+
 }
 
 func (u *UI) buildGameOverContainer(ch chan struct{}) *widget.Container {

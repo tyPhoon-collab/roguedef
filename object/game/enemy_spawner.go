@@ -2,6 +2,7 @@ package game
 
 import (
 	"roguedef/domain"
+	"roguedef/resources"
 	"roguedef/system"
 	"time"
 )
@@ -27,8 +28,6 @@ func (s *EnemySpawner) Update() {
 func (s *EnemySpawner) addEnemy() {
 	phase := s.phaseManager.phase
 
-	// enemy := NewEnemyFromResource(resources.GopherImage)
-
 	t, status := domain.EnemyBlueprintByPhase(phase)
 	domain.ModifyStatusByPhase(phase, &status)
 
@@ -39,9 +38,10 @@ func (s *EnemySpawner) addEnemy() {
 		enemy = NewEnemySquare(24)
 	case domain.EnemyTypeTriangle:
 		enemy = NewEnemyTriangle(24)
+	default:
+		enemy = NewEnemyFromResource(resources.GopherImage)
 	}
 
-	// enemy := NewEnemyTriangle(24).
 	enemy = enemy.
 		WithPlayer(s.player).
 		WithStatus(&status)
