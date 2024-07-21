@@ -35,8 +35,7 @@ func (p *Player) AddExp(exp int) {
 }
 
 func (p *Player) onLevelChanged() {
-	system.TimeScale = 0
-	v := <-p.ui.ShowUpgradeSelection()
+	v := p.ui.WaitShowUpgradeSelection()
 	switch v {
 	case upgrade.UpgradeFrequency:
 		system.ScaleDuration(&p.bulletSpawner.Frequency, 0.75)
@@ -45,7 +44,6 @@ func (p *Player) onLevelChanged() {
 	case upgrade.UpgradeSpeed:
 		p.bulletSpawner.bSpeed *= 1.5
 	}
-	system.TimeScale = 1
 }
 
 func NewPlayer(pos Vec2) *Player {

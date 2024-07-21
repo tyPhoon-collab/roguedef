@@ -3,6 +3,8 @@
         "ebiten",
         "ebitenui",
         "ebitenutil",
+        "freetype",
+        "gofont",
         "goregular",
         "hajimehoshi",
         "inpututil",

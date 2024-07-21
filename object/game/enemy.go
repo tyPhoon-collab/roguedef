@@ -51,7 +51,7 @@ func (e *Enemy) PredictPos(proceed float64) Vec2 {
 
 func (e *Enemy) OnRemove() {
 	if e.player != nil {
-		e.player.AddExp(10)
+		e.player.AddExp(e.Exp)
 	}
 }
 

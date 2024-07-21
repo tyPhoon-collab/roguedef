@@ -79,7 +79,6 @@ func NewUIEmbed(container *widget.Container) *UIEmbed {
 }
 
 func LoadButtonImage() (*widget.ButtonImage, error) {
-	// idle := image.NewNineSliceSimple(LoadImage(resources.ButtonImage), 4, 8)
 	tile := LoadImage(resources.ButtonTileImage)
 
 	images := make([]*image.NineSlice, 4)

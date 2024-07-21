@@ -20,6 +20,13 @@ func (u *UI) WaitShowGameOver() {
 	system.TimeScale = 1
 }
 
+func (u *UI) WaitShowUpgradeSelection() upgrade.Upgrade {
+	system.TimeScale = 0
+	v := <-u.ShowUpgradeSelection()
+	system.TimeScale = 1
+	return v
+}
+
 func (u *UI) ShowGameOver() chan struct{} {
 	ch := make(chan struct{})
 
@@ -67,30 +74,20 @@ func (u *UI) buildGameOverContainer(ch chan struct{}) *widget.Container {
 
 	container.AddChild(content)
 
-	content.AddChild(widget.NewButton(
-		widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
-			widget.RowLayoutData{
-				Position: widget.RowLayoutPositionCenter,
-			},
-		)),
-		u.BasicButtonOpts("Play Again", func(args *widget.ButtonClickedEventArgs) {
+	content.AddChild(
+		u.newPopupButton("Play Again", func(args *widget.ButtonClickedEventArgs) {
 			u.scene.Reload()
 			ch <- struct{}{}
 			u.Container().RemoveChild(content)
 		}),
-	))
-	content.AddChild(widget.NewButton(
-		widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
-			widget.RowLayoutData{
-				Position: widget.RowLayoutPositionCenter,
-			},
-		)),
-		u.BasicButtonOpts("Quit", func(args *widget.ButtonClickedEventArgs) {
+	)
+	content.AddChild(
+		u.newPopupButton("Quit", func(args *widget.ButtonClickedEventArgs) {
 			u.scene.Pop()
 			ch <- struct{}{}
 			u.Container().RemoveChild(container)
 		}),
-	))
+	)
 
 	return container
 }
@@ -119,18 +116,25 @@ func (u *UI) buildUpgradeSelectionContainer(ch chan upgrade.Upgrade) *widget.Con
 	container.AddChild(content)
 
 	for _, v := range upgrade.Values() {
-		content.AddChild(widget.NewButton(
-			widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
-				widget.RowLayoutData{
-					Position: widget.RowLayoutPositionCenter,
-				},
-			)),
-			u.BasicButtonOpts(v.String(), func(args *widget.ButtonClickedEventArgs) {
+		content.AddChild(
+			u.newPopupButton(v.String(), func(args *widget.ButtonClickedEventArgs) {
 				ch <- v
 				u.Container().RemoveChild(container)
 			}),
-		))
+		)
 	}
 
 	return container
+}
+
+func (u *UI) newPopupButton(text string, do func(args *widget.ButtonClickedEventArgs)) *widget.Button {
+	return widget.NewButton(
+		widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
+			widget.RowLayoutData{
+				Position: widget.RowLayoutPositionCenter,
+				Stretch:  true,
+			},
+		)),
+		u.BasicButtonOpts(text, do),
+	)
 }
