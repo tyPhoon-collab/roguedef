@@ -25,13 +25,27 @@ func (s *EnemySpawner) Update() {
 }
 
 func (s *EnemySpawner) addEnemy() {
-	// enemy := NewEnemyFromResource(resources.GopherImage).
+	phase := s.phaseManager.phase
+
+	// enemy := NewEnemyFromResource(resources.GopherImage)
+
+	t, status := domain.EnemyBlueprintByPhase(phase)
+	domain.ModifyStatusByPhase(phase, &status)
+
+	var enemy *Enemy
+
+	switch t {
+	case domain.EnemyTypeSquare:
+		enemy = NewEnemySquare(24)
+	case domain.EnemyTypeTriangle:
+		enemy = NewEnemyTriangle(24)
+	}
+
 	// enemy := NewEnemyTriangle(24).
-	enemy := NewEnemySquare(24).
+	enemy = enemy.
 		WithPlayer(s.player).
-		WithStatusModifier(func(st *domain.Status) {
-			domain.ModifyStatusByPhase(st, s.phaseManager.Phase())
-		})
+		WithStatus(&status)
+
 	enemy.Pos = s.spawnRange.RandomPoint()
 	s.game.AddObjectWithData(enemy).WithTag("enemy")
 }

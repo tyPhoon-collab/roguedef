@@ -9,7 +9,7 @@ import (
 
 type Enemy struct {
 	*system.Transform
-	*domain.Status
+	*domain.EnemyStatus
 	game        *Game
 	object      *system.Object
 	velocity    *system.Velocity
@@ -31,8 +31,8 @@ func (e *Enemy) Update() {
 	if e.Hp <= 0 {
 		e.game.RemoveObject(e.object.ID)
 	}
+	e.velocity.Scale = e.Speed
 	e.velocity.Update()
-	e.MoveTo(e.Pos)
 }
 
 func (e *Enemy) Draw(screen *ebiten.Image) {
@@ -41,8 +41,12 @@ func (e *Enemy) Draw(screen *ebiten.Image) {
 
 func (e *Enemy) OnIntersect(other *system.Object) {
 	if o, ok := other.Data.(domain.Attacker); ok {
-		o.Attack(e.Status)
+		o.Attack(&e.EnemyStatus.Status)
 	}
+}
+
+func (e *Enemy) PredictPos(proceed float64) Vec2 {
+	return e.Pos.Add(e.velocity.ScaledVel().MulScalar(proceed))
 }
 
 func (e *Enemy) OnRemove() {
@@ -56,11 +60,8 @@ func (e *Enemy) WithPlayer(player *Player) *Enemy {
 	return e
 }
 
-func (o *Enemy) WithStatusModifier(modifier func(*domain.Status)) *Enemy {
-	if o.Status == nil {
-		panic("status is nil")
-	}
-	modifier(o.Status)
+func (o *Enemy) WithStatus(status *domain.EnemyStatus) *Enemy {
+	o.EnemyStatus = status
 	return o
 }
 
@@ -70,7 +71,6 @@ func NewEnemy(transform *system.Transform, drawer system.Drawer, intersector sys
 		drawer:      drawer,
 		velocity:    system.NewVelocity().WithTransform(transform).With(Vec2{X: 0, Y: 1}),
 		intersector: intersector,
-		Status:      domain.NewStatus(10),
 	}
 }
 

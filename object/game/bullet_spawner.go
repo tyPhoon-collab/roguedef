@@ -31,7 +31,11 @@ func (r *BulletSpawner) addBullet() {
 		return
 	}
 
-	dir, err := r.Pos.DirTo(target)
+	distance := r.Pos.Distance(target.Pos)
+	t := distance / r.bSpeed
+	predictedPos := target.PredictPos(t)
+
+	dir, err := r.Pos.DirTo(predictedPos)
 	if err != nil {
 		return
 	}
@@ -42,26 +46,26 @@ func (r *BulletSpawner) addBullet() {
 	r.game.AddObjectWithData(bullet)
 }
 
-func (r *BulletSpawner) calculateTarget() (Vec2, bool) {
+func (r *BulletSpawner) calculateTarget() (*Enemy, bool) {
 	nearestDistance := -1.0
-	nearestEnemy := Vec2{}
+	var nearestEnemy *Enemy
 
+	// get max y enemy
 	for o := range r.game.ObjectsByTag("enemy") {
 		enemy := o.Data.(*Enemy)
-
-		distance := enemy.Pos.Distance(r.Pos)
+		distance := enemy.Pos.Y
 
 		if nearestDistance == -1.0 {
 			nearestDistance = distance
-			nearestEnemy = enemy.Pos
-		} else if nearestDistance > distance {
+			nearestEnemy = enemy
+		} else if nearestDistance < enemy.Pos.Y {
 			nearestDistance = distance
-			nearestEnemy = enemy.Pos
+			nearestEnemy = enemy
 		}
 	}
 
 	if nearestDistance == -1.0 {
-		return Vec2{}, false
+		return nil, false
 	}
 	return nearestEnemy, true
 }

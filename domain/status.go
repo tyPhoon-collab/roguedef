@@ -4,8 +4,9 @@ type Status struct {
 	Hp int
 }
 
-func NewStatus(hp int) *Status {
-	return &Status{
-		Hp: hp,
-	}
+type EnemyStatus struct {
+	Status
+
+	Exp   int
+	Speed float64
 }
