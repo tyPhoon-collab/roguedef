@@ -1,4 +1,4 @@
-package game
+package title
 
 import (
 	"image/color"
@@ -17,12 +17,8 @@ func (b *Background) Draw(screen *ebiten.Image) {
 	b.Sprite.Draw(screen)
 }
 
-func (b *Background) Priority() int {
-	return -1
-}
+func NewBackground(width int, height int) *Background {
+	b := &Background{system.NewColorSprite(width, height, color.Gray{60}).WithAlignment(system.AlignTopLeft)}
 
-func NewBackground() *Background {
-	return &Background{
-		system.NewColorSprite(320, 640, color.Gray{60}).WithAlignment(system.AlignTopLeft),
-	}
+	return b
 }

@@ -49,7 +49,7 @@ func (p *Player) onLevelChanged() {
 }
 
 func NewPlayer(pos Vec2) *Player {
-	playerImage, _, err := ebitenutil.NewImageFromFile("resources/images/gopher.png")
+	playerImage, _, err := ebitenutil.NewImageFromFile("resources/images/player_back.png")
 
 	if err != nil {
 		panic(err)
@@ -57,6 +57,7 @@ func NewPlayer(pos Vec2) *Player {
 
 	transform := system.NewTransform()
 
+	transform.Scale = transform.Scale.MulScalar(0.15)
 	transform.MoveTo(pos)
 
 	player := &Player{

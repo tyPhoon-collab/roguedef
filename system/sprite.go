@@ -1,6 +1,8 @@
 package system
 
 import (
+	"image/color"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -48,4 +50,11 @@ func NewSprite(image *ebiten.Image) *Sprite {
 	return (&Sprite{
 		Image: image,
 	}).WithTransform(nil).WithAlignment(AlignCenter)
+}
+
+func NewColorSprite(width int, height int, color color.Color) *Sprite {
+	img := ebiten.NewImage(width, height)
+	img.Fill(color)
+
+	return (&Sprite{Image: img}).WithTransform(nil).WithAlignment(AlignCenter)
 }

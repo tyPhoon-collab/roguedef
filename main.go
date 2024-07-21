@@ -14,8 +14,10 @@ import (
 
 type Vec2 = vector.Vec2
 
+const width, height = 320, 640
+
 func main() {
-	ebiten.SetWindowSize(320, 640)
+	ebiten.SetWindowSize(width, height)
 	ebiten.SetWindowTitle("Hello World (Ebitengine Demo)")
 
 	routes := system.Routes{
@@ -31,9 +33,8 @@ func main() {
 func buildTitle(scene *system.Scene) *system.Game {
 	g := system.NewGame()
 
-	ui := title.NewUI(scene)
-
-	g.AddObjectWithData(ui).WithTag("ui")
+	g.AddObjectWithData(title.NewUI(scene)).WithTag("ui")
+	g.AddObjectWithData(title.NewBackground(width, height))
 
 	return g
 }
@@ -44,7 +45,7 @@ func buildGame(scene *system.Scene) *system.Game {
 	background := game.NewBackground()
 	ui := game.NewUI(scene)
 	player := game.NewPlayer(Vec2{X: 160, Y: 590})
-	bulletSpawner := game.NewBulletSpawner(player)
+	bulletSpawner := game.NewBulletSpawner(Vec2{X: 160, Y: 500})
 	enemySpawner := game.NewEnemySpawner(rect.Rect{
 		Min: Vec2{X: 20, Y: 0},
 		Max: Vec2{X: 300, Y: 10},

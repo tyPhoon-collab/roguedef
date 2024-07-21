@@ -2,10 +2,10 @@ package game
 
 import (
 	"roguedef/domain"
+	"roguedef/resources"
 	"roguedef/system"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type Bullet struct {
@@ -53,20 +53,15 @@ func (b *Bullet) OnIntersect(other *system.Object) {
 }
 
 func NewBullet(vel Vec2, status *domain.AttackStatus) *Bullet {
-	bulletImage, _, err := ebitenutil.NewImageFromFile("resources/images/gopher.png")
-
-	if err != nil {
-		panic(err)
-	}
-
+	img := system.LoadImage(resources.BulletImage)
 	transform := system.NewTransform()
 	transform.Scale = transform.Scale.MulScalar(0.2)
 
 	return &Bullet{
 		Transform:    transform,
 		AttackStatus: status,
-		sprite:       system.NewSprite(bulletImage).WithTransform(transform),
+		sprite:       system.NewSprite(img).WithTransform(transform),
 		velocity:     system.NewVelocity().WithTransform(transform).With(vel),
-		intersect:    system.NewCircle().WithTransform(transform).FromImage(bulletImage),
+		intersect:    system.NewCircle().WithTransform(transform).FromImage(img),
 	}
 }

@@ -2,13 +2,13 @@ package system
 
 import (
 	"image/color"
+	"roguedef/resources"
 
 	"github.com/ebitenui/ebitenui"
 	"github.com/ebitenui/ebitenui/image"
 	"github.com/ebitenui/ebitenui/widget"
 	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/gofont/goregular"
 )
@@ -35,6 +35,10 @@ func (u *UIEmbed) BasicButtonOpts(text string, do func(args *widget.ButtonClicke
 			opt(b)
 		}
 	}
+}
+
+func (u *UIEmbed) BasicTextOpts(text string) widget.TextOpt {
+	return widget.TextOpts.Text(text, u.face, color.White)
 }
 
 func (u *UIEmbed) UI() *ebitenui.UI {
@@ -70,12 +74,7 @@ func NewUIEmbed(container *widget.Container) *UIEmbed {
 }
 
 func LoadButtonImage() (*widget.ButtonImage, error) {
-	img, _, err := ebitenutil.NewImageFromFile("resources/images/ui/button.png")
-
-	if err != nil {
-		return nil, err
-	}
-	idle := image.NewNineSliceSimple(img, 16, 32)
+	idle := image.NewNineSliceSimple(LoadImage(resources.ButtonImage), 16, 32)
 
 	return &widget.ButtonImage{
 		Idle:    idle,

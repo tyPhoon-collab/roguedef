@@ -1,10 +1,12 @@
 package system
 
 import (
+	"bytes"
 	"math"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 var TimeScale = 1.0
@@ -36,4 +38,12 @@ func MulIntByFloat(i int, mul float64) int {
 // ScaleDuration multiplies duration by mul
 func ScaleDuration(duration *time.Duration, mul float64) {
 	*duration = time.Duration(float64(*duration) * mul)
+}
+
+func LoadImage(embedded []byte) *ebiten.Image {
+	img, _, err := ebitenutil.NewImageFromReader(bytes.NewReader(embedded))
+	if err != nil {
+		panic(err)
+	}
+	return img
 }
