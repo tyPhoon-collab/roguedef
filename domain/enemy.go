@@ -1,6 +1,9 @@
 package domain
 
-import "math"
+import (
+	"math"
+	"slices"
+)
 
 func ModifyStatusByPhase(phase int, status *EnemyStatus) {
 	weight := float64(phase-1)/10 + 1
@@ -12,6 +15,7 @@ type EnemyType int
 const (
 	EnemyTypeSquare EnemyType = iota
 	EnemyTypeTriangle
+	EnemyTypeBoss
 )
 
 func (t EnemyType) Status() EnemyStatus {
@@ -21,7 +25,7 @@ func (t EnemyType) Status() EnemyStatus {
 			Status: Status{
 				Hp: 10,
 			},
-			Exp:   10,
+			Exp:   15,
 			Speed: 1,
 		}
 	case EnemyTypeTriangle:
@@ -31,6 +35,14 @@ func (t EnemyType) Status() EnemyStatus {
 			},
 			Exp:   7,
 			Speed: 2,
+		}
+	case EnemyTypeBoss:
+		return EnemyStatus{
+			Status: Status{
+				Hp: 100,
+			},
+			Exp:   200,
+			Speed: 0.5,
 		}
 	}
 
@@ -44,14 +56,16 @@ func EnemyTypesByPhase(phase int) []EnemyType {
 	switch phase % 2 {
 	case 0:
 		for i := 0; i < len; i++ {
-			types[i] = EnemyTypeSquare
+			types[i] = EnemyTypeTriangle
 		}
 	case 1:
 		for i := 0; i < len; i++ {
-			types[i] = EnemyTypeTriangle
+			types[i] = EnemyTypeSquare
 		}
-	default:
-		panic("unknown phase")
+	}
+
+	if phase%5 == 0 {
+		types = slices.Insert(types, 0, EnemyTypeBoss)
 	}
 
 	return types

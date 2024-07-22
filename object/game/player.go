@@ -44,6 +44,8 @@ func (p *Player) onLevelChanged() {
 	case upgrade.UpgradeSpeed:
 		p.bulletSpawner.bSpeed *= 1.5
 	}
+
+	p.AddExp(0)
 }
 
 func NewPlayer(pos Vec2) *Player {

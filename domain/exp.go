@@ -32,10 +32,6 @@ func (m *ExpManager) levelUp() bool {
 		m.level++
 		m.exp -= ExpToNextLevel(m.level - 1)
 
-		for m.levelUp() {
-			// do nothing
-		}
-
 		return true
 	}
 

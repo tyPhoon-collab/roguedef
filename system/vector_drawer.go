@@ -58,7 +58,11 @@ func (v *VectorDrawer) Draw(screen *ebiten.Image) {
 	}
 	path.Close()
 
-	vs, is := path.AppendVerticesAndIndicesForFilling(nil, nil)
+	// vs, is := path.AppendVerticesAndIndicesForFilling(nil, nil)
+
+	sop := &vector.StrokeOptions{}
+	sop.Width = 3
+	vs, is := path.AppendVerticesAndIndicesForStroke(nil, nil, sop)
 
 	for i := range vs {
 		vs[i].SrcX = 0

@@ -46,7 +46,7 @@ func (d *Debug) Draw(screen *ebiten.Image) {
 
 	tps := ebiten.ActualTPS()
 	ebitenutil.DebugPrintAt(screen, fmt.Sprintf(
-		"TPS: %0.2f\nPhase: %d\nExp: %d\nLevel: %d\nBulletFreq: %d\nSpawnFreq: %d\nExpToNextLevel: %d",
+		"TPS: %0.2f\nPhase: %d\nExp: %d\nLevel: %d\nBulletFreq: %d\nSpawnFreq: %d\nExpToNextLevel: %d\nEnemyQueueLen: %d\n",
 		tps,
 		d.phaseManager.phase,
 		d.player.expManager.Exp(),
@@ -54,6 +54,7 @@ func (d *Debug) Draw(screen *ebiten.Image) {
 		d.bulletSpawner.Frequency.Milliseconds(),
 		d.enemySpawner.Frequency.Milliseconds(),
 		domain.ExpToNextLevel(d.player.expManager.Level()),
+		d.enemySpawner.queue.Len(),
 	), 10, 200)
 
 	for _, o := range d.game.Intersects() {

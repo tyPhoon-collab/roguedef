@@ -38,7 +38,7 @@ func (s *EnemySpawner) buildQueue() {
 func (s *EnemySpawner) addEnemy() {
 	if s.queue.IsEmpty() {
 		s.phaseManager.NextPhase()
-		system.ScaleDuration(&s.Frequency, 0.8)
+		system.ScaleDuration(&s.Frequency, 0.9)
 
 		s.buildQueue()
 	}
@@ -56,6 +56,8 @@ func (s *EnemySpawner) addEnemy() {
 		enemy = NewEnemySquare(24)
 	case domain.EnemyTypeTriangle:
 		enemy = NewEnemyTriangle(24)
+	case domain.EnemyTypeBoss:
+		enemy = NewEnemyTriangle(64)
 	default:
 		enemy = NewEnemyFromResource(resources.GopherImage)
 	}
