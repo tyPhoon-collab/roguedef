@@ -6,8 +6,10 @@ import (
 )
 
 func ModifyStatusByPhase(phase int, status *EnemyStatus) {
-	weight := float64(phase-1)/10 + 1
+	p := float64(phase)
+	weight := (p-1)/10 + 1
 	status.Hp = int(math.Round(float64(status.Hp) * weight))
+	status.Speed = status.Speed + (0.1 * p)
 }
 
 type EnemyType int

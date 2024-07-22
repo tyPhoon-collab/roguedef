@@ -38,7 +38,7 @@ func (s *EnemySpawner) buildQueue() {
 func (s *EnemySpawner) addEnemy() {
 	if s.queue.IsEmpty() {
 		s.phaseManager.NextPhase()
-		system.ScaleDuration(&s.Frequency, 0.9)
+		system.ScaleDuration(&s.Frequency, 0.85)
 
 		s.buildQueue()
 	}

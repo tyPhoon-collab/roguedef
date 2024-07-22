@@ -42,7 +42,7 @@ func (p *Player) onLevelChanged() {
 	case upgrade.UpgradePower:
 		p.bulletSpawner.bDamage = system.MulIntByFloat(p.bulletSpawner.bDamage, 1.5)
 	case upgrade.UpgradeSpeed:
-		p.bulletSpawner.bSpeed *= 1.5
+		p.bulletSpawner.bSpeed *= 1.2
 	}
 
 	p.AddExp(0)
