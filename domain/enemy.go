@@ -37,10 +37,22 @@ func (t EnemyType) Status() EnemyStatus {
 	panic("unknown enemy type")
 }
 
-func EnemyBlueprintByPhase(phase int) (EnemyType, EnemyStatus) {
-	if phase%2 == 1 {
-		return EnemyTypeSquare, EnemyTypeSquare.Status()
-	} else {
-		return EnemyTypeTriangle, EnemyTypeTriangle.Status()
+func EnemyTypesByPhase(phase int) []EnemyType {
+	len := phase + 10
+	types := make([]EnemyType, len)
+
+	switch phase % 2 {
+	case 0:
+		for i := 0; i < len; i++ {
+			types[i] = EnemyTypeSquare
+		}
+	case 1:
+		for i := 0; i < len; i++ {
+			types[i] = EnemyTypeTriangle
+		}
+	default:
+		panic("unknown phase")
 	}
+
+	return types
 }

@@ -49,3 +49,7 @@ func (q *Queue[T]) Clear() {
 func NewQueue[T any]() *Queue[T] {
 	return &Queue[T]{}
 }
+
+func NewQueueFrom[T any](data []T) *Queue[T] {
+	return &Queue[T]{data: data}
+}

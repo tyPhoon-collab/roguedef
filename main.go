@@ -49,8 +49,8 @@ func buildGame(scene *system.Scene) *system.Game {
 	enemySpawner := game.NewEnemySpawner(rect.Rect{
 		Min: Vec2{X: 20, Y: 0},
 		Max: Vec2{X: 300, Y: 10},
-	}, time.Second)
-	phaseManager := game.NewPhaseManager(enemySpawner)
+	}, 2*time.Second)
+	phaseManager := game.NewPhaseManager()
 	gameOverChecker := game.NewGameOverChecker()
 	debug := game.NewDebug()
 

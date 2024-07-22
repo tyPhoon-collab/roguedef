@@ -2,23 +2,13 @@ package game
 
 import (
 	"roguedef/system"
-	"time"
 )
 
 type PhaseManager struct {
-	enemySpawner *EnemySpawner
-	game         *Game
-	phase        int
-	*system.Looper
+	phase int
 }
 
-func (l *PhaseManager) Register(g *Game, o *system.Object) {
-	l.game = g
-}
-
-func (l *PhaseManager) Update() {
-	l.Looper.Update()
-}
+func (l *PhaseManager) Register(g *Game, o *system.Object) {}
 
 func (l *PhaseManager) Phase() int {
 	return l.phase
@@ -26,16 +16,12 @@ func (l *PhaseManager) Phase() int {
 
 func (l *PhaseManager) NextPhase() {
 	l.phase++
-	system.ScaleDuration(&l.enemySpawner.Frequency, 0.9)
 }
 
-func NewPhaseManager(enemySpawner *EnemySpawner) *PhaseManager {
+func NewPhaseManager() *PhaseManager {
 	m := &PhaseManager{
-		enemySpawner: enemySpawner,
-		phase:        1,
+		phase: 1,
 	}
-
-	m.Looper = system.NewLooper(10*time.Second, m.NextPhase)
 
 	return m
 }
