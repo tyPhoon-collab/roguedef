@@ -25,3 +25,7 @@ go.work.sum
 .env
 
 .DS_Store
+
+# This folder includes built files
+mobile/android
+mobile/ios
