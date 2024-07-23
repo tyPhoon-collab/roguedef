@@ -121,6 +121,17 @@ func (u *UI) buildGameOverContainer(ch chan struct{}) *widget.Container {
 	container.AddChild(content)
 
 	content.AddChild(
+		widget.NewText(
+			u.BasicTextOpts("Game Over"),
+			widget.TextOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
+				widget.RowLayoutData{
+					Position: widget.RowLayoutPositionCenter,
+				},
+			)),
+		),
+	)
+
+	content.AddChild(
 		u.newPopupButton("Play Again", func(args *widget.ButtonClickedEventArgs) {
 			u.scene.Reload()
 			ch <- struct{}{}
@@ -161,6 +172,17 @@ func (u *UI) buildUpgradeSelectionContainer(ch chan upgrade.Upgrade) *widget.Con
 	)
 
 	container.AddChild(content)
+
+	content.AddChild(
+		widget.NewText(
+			u.BasicTextOpts("Upgrade"),
+			widget.TextOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
+				widget.RowLayoutData{
+					Position: widget.RowLayoutPositionCenter,
+				},
+			)),
+		),
+	)
 
 	for _, v := range upgrade.Values() {
 		content.AddChild(
