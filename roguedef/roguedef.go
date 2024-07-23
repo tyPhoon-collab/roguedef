@@ -1,15 +1,14 @@
 package roguedef
 
 import (
+	"roguedef/ds"
+	"roguedef/rect"
+	"roguedef/roguedef/object/game"
+	"roguedef/roguedef/object/title"
+	"roguedef/system"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
-
-	"roguedef/ds"
-	"roguedef/object/game"
-	"roguedef/object/title"
-	"roguedef/rect"
-	"roguedef/system"
 )
 
 type Vec2 = ds.Vec2
