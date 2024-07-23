@@ -98,38 +98,7 @@ func NewUI(scene *system.Scene) *UI {
 }
 
 func (u *UI) buildGameOverContainer(ch chan struct{}) *widget.Container {
-	container := widget.NewContainer(
-		widget.ContainerOpts.Layout(widget.NewAnchorLayout()),
-	)
-	content := widget.NewContainer(
-		u.BackgroundImage(),
-		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
-			widget.AnchorLayoutData{
-				HorizontalPosition: widget.AnchorLayoutPositionCenter,
-				VerticalPosition:   widget.AnchorLayoutPositionCenter,
-			},
-		)),
-		widget.ContainerOpts.Layout(
-			widget.NewRowLayout(
-				widget.RowLayoutOpts.Padding(widget.NewInsetsSimple(20)),
-				widget.RowLayoutOpts.Direction(widget.DirectionVertical),
-				widget.RowLayoutOpts.Spacing(10),
-			),
-		),
-	)
-
-	container.AddChild(content)
-
-	content.AddChild(
-		widget.NewText(
-			u.BasicTextOpts("Game Over"),
-			widget.TextOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
-				widget.RowLayoutData{
-					Position: widget.RowLayoutPositionCenter,
-				},
-			)),
-		),
-	)
+	container, content := u.newWindowLikeContainer("Game Over")
 
 	content.AddChild(
 		u.newPopupButton("Play Again", func(args *widget.ButtonClickedEventArgs) {
@@ -146,10 +115,29 @@ func (u *UI) buildGameOverContainer(ch chan struct{}) *widget.Container {
 		}),
 	)
 
+	container.AddChild(content)
+
 	return container
 }
 
 func (u *UI) buildUpgradeSelectionContainer(ch chan upgrade.Upgrade) *widget.Container {
+	container, content := u.newWindowLikeContainer("Upgrade")
+
+	for _, v := range upgrade.Values() {
+		content.AddChild(
+			u.newPopupButton(v.String(), func(args *widget.ButtonClickedEventArgs) {
+				ch <- v
+				u.Container().RemoveChild(container)
+			}),
+		)
+	}
+
+	container.AddChild(content)
+
+	return container
+}
+
+func (u *UI) newWindowLikeContainer(title string) (*widget.Container, *widget.Container) {
 	container := widget.NewContainer(
 		widget.ContainerOpts.Layout(widget.NewAnchorLayout()),
 	)
@@ -171,11 +159,9 @@ func (u *UI) buildUpgradeSelectionContainer(ch chan upgrade.Upgrade) *widget.Con
 		),
 	)
 
-	container.AddChild(content)
-
 	content.AddChild(
 		widget.NewText(
-			u.BasicTextOpts("Upgrade"),
+			u.BasicTextOpts(title),
 			widget.TextOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
 				widget.RowLayoutData{
 					Position: widget.RowLayoutPositionCenter,
@@ -184,18 +170,8 @@ func (u *UI) buildUpgradeSelectionContainer(ch chan upgrade.Upgrade) *widget.Con
 		),
 	)
 
-	for _, v := range upgrade.Values() {
-		content.AddChild(
-			u.newPopupButton(v.String(), func(args *widget.ButtonClickedEventArgs) {
-				ch <- v
-				u.Container().RemoveChild(container)
-			}),
-		)
-	}
-
-	return container
+	return container, content
 }
-
 func (u *UI) newPopupButton(text string, do func(args *widget.ButtonClickedEventArgs)) *widget.Button {
 	return widget.NewButton(
 		widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(
