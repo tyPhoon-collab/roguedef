@@ -20,8 +20,8 @@ type UIEmbed struct {
 }
 
 func (u *UIEmbed) BackgroundImage() widget.ContainerOpt {
-	img := LoadImage(resources.ButtonImage)
-	bg := widget.ContainerOpts.BackgroundImage(image.NewNineSliceSimple(img, 4, 8))
+	img := LoadImage(resources.WindowImage)
+	bg := widget.ContainerOpts.BackgroundImage(image.NewNineSliceSimple(img, 12, 8))
 	return bg
 }
 

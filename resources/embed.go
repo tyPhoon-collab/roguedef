@@ -4,9 +4,6 @@ import (
 	_ "embed"
 )
 
-//go:embed images/ui/button.png
-var ButtonImage []byte
-
 //go:embed images/gopher.png
 var GopherImage []byte // for testing
 
@@ -24,6 +21,9 @@ var BulletImage []byte
 
 //go:embed images/ui/button_tile.png
 var ButtonTileImage []byte
+
+//go:embed images/ui/window.png
+var WindowImage []byte
 
 //go:embed fonts/x12y16pxMaruMonica.ttf
 var Font []byte

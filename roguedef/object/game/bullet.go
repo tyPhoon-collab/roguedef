@@ -18,8 +18,8 @@ type Bullet struct {
 	intersect system.Intersector
 }
 
-func (b *Bullet) Attack(status *domain.Status) {
-	status.Hp -= b.Damage
+func (b *Bullet) Attack(status *domain.Status) domain.AttackedContext {
+	return status.Apply(*b.AttackStatus)
 }
 
 func (b *Bullet) Register(g *Game, o *system.Object) {

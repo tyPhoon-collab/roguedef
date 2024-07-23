@@ -51,7 +51,7 @@ func (p *Player) onLevelChanged() {
 func NewPlayer(pos Vec2) *Player {
 	img := system.LoadImage(resources.PlayerBackImage)
 	transform := system.NewTransform()
-	transform.Scale = transform.Scale.MulScalar(4)
+	transform.Scale = transform.Scale.MulScalar(2)
 	transform.MoveTo(pos)
 
 	player := &Player{

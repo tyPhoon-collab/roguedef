@@ -74,7 +74,7 @@ func NewBulletSpawner(pos Vec2) *BulletSpawner {
 	img := system.LoadImage(resources.PendantImage)
 	transform := system.NewTransform()
 	transform.MoveTo(pos)
-	transform.Scale = transform.Scale.MulScalar(4)
+	transform.Scale = transform.Scale.MulScalar(2)
 	sprite := system.NewSprite(img).WithTransform(transform)
 	// sprite := system.NewEmptySprite().WithTransform(transform)
 

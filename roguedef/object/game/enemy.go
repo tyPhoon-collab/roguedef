@@ -1,8 +1,11 @@
 package game
 
 import (
+	"fmt"
 	"roguedef/domain"
+	"roguedef/ds"
 	"roguedef/system"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -11,6 +14,7 @@ type Enemy struct {
 	*system.Transform
 	*domain.EnemyStatus
 	game        *Game
+	ui          *UI
 	object      *system.Object
 	velocity    *system.Velocity
 	intersector system.Intersector
@@ -21,6 +25,8 @@ type Enemy struct {
 func (e *Enemy) Register(g *Game, o *system.Object) {
 	e.game = g
 	e.object = o
+
+	e.ui = g.ObjectByTag("ui").Data.(*UI)
 }
 
 func (e *Enemy) Intersect() system.Intersector {
@@ -41,7 +47,13 @@ func (e *Enemy) Draw(screen *ebiten.Image) {
 
 func (e *Enemy) OnIntersect(other *system.Object) {
 	if o, ok := other.Data.(domain.Attacker); ok {
-		o.Attack(&e.EnemyStatus.Status)
+		ctx := o.Attack(&e.EnemyStatus.Status)
+		x, y := ds.Unpack[int](e.Pos)
+		rf := e.ui.AddTextAt(x, y, fmt.Sprintf("%d", ctx.AppliedDamage))
+		e.game.AddTaskAfter(1*time.Second, func() error {
+			rf()
+			return nil
+		})
 	}
 }
 

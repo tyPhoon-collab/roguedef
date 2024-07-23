@@ -2,17 +2,21 @@ package game
 
 import (
 	"fmt"
+	"image"
 	"roguedef/domain/upgrade"
 	"roguedef/system"
 
 	"github.com/ebitenui/ebitenui/widget"
 )
 
+type RemoveFunc = func()
+
 type UI struct {
 	*system.UIEmbed
-	scene        *system.Scene
-	phaseText    *widget.Text
-	phaseManager *PhaseManager
+	scene               *system.Scene
+	damageTextContainer *widget.Container
+	phaseText           *widget.Text
+	phaseManager        *PhaseManager
 }
 
 func (u *UI) Register(g *Game, o *system.Object) {
@@ -56,13 +60,25 @@ func (u *UI) ShowUpgradeSelection() chan upgrade.Upgrade {
 	return ch
 }
 
-func NewUI(scene *system.Scene) *UI {
+func (u *UI) AddTextAt(x, y int, text string) RemoveFunc {
+	t := widget.NewText(u.BasicTextOpts(text))
+	tw := t.GetWidget()
+	tw.SetLocation(tw.Rect.Add(image.Pt(x, y)))
 
+	u.damageTextContainer.AddChild(t)
+	return func() { u.damageTextContainer.RemoveChild(t) }
+}
+
+func NewUI(scene *system.Scene) *UI {
 	rootContainer := widget.NewContainer(
 		widget.ContainerOpts.Layout(widget.NewStackedLayout()),
 	)
 
 	u := &UI{UIEmbed: system.NewUIEmbed(rootContainer), scene: scene}
+
+	damageTextContainer := widget.NewContainer()
+	rootContainer.AddChild(damageTextContainer)
+	u.damageTextContainer = damageTextContainer
 
 	statusContainer := widget.NewContainer(
 		widget.ContainerOpts.Layout(widget.NewRowLayout(
@@ -72,7 +88,6 @@ func NewUI(scene *system.Scene) *UI {
 		)),
 	)
 	rootContainer.AddChild(statusContainer)
-
 	u.phaseText = widget.NewText(
 		u.BasicTextOpts(""),
 	)

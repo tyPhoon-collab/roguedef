@@ -36,8 +36,8 @@ func buildGame(scene *system.Scene) *system.Game {
 
 	background := game.NewBackground()
 	ui := game.NewUI(scene)
-	player := game.NewPlayer(Vec2{X: 160, Y: 580})
-	bulletSpawner := game.NewBulletSpawner(Vec2{X: 160, Y: 510})
+	player := game.NewPlayer(Vec2{X: 160, Y: 600})
+	bulletSpawner := game.NewBulletSpawner(Vec2{X: 160, Y: 560})
 	enemySpawner := game.NewEnemySpawner(rect.Rect{
 		Min: Vec2{X: 20, Y: 0},
 		Max: Vec2{X: 300, Y: 10},
