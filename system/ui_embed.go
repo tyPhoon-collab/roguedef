@@ -11,7 +11,6 @@ import (
 	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten/v2"
 	"golang.org/x/image/font"
-	"golang.org/x/image/font/gofont/goregular"
 )
 
 type UIEmbed struct {
@@ -100,7 +99,7 @@ func LoadButtonImage() (*widget.ButtonImage, error) {
 }
 
 func LoadFont() (font.Face, error) {
-	ttfFont, err := truetype.Parse(goregular.TTF)
+	ttfFont, err := truetype.Parse(resources.Font)
 	if err != nil {
 		return nil, err
 	}

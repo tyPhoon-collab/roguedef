@@ -24,3 +24,6 @@ var BulletImage []byte
 
 //go:embed images/ui/button_tile.png
 var ButtonTileImage []byte
+
+//go:embed fonts/x12y16pxMaruMonica.ttf
+var Font []byte
