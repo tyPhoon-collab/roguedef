@@ -25,7 +25,7 @@ func (t EnemyType) Status() EnemyStatus {
 	case EnemyTypeSquare:
 		return EnemyStatus{
 			Status: Status{
-				Hp: 10,
+				Hp: 20,
 			},
 			Exp:   15,
 			Speed: 1,
@@ -33,7 +33,7 @@ func (t EnemyType) Status() EnemyStatus {
 	case EnemyTypeTriangle:
 		return EnemyStatus{
 			Status: Status{
-				Hp: 5,
+				Hp: 10,
 			},
 			Exp:   7,
 			Speed: 2,
@@ -41,7 +41,7 @@ func (t EnemyType) Status() EnemyStatus {
 	case EnemyTypeBoss:
 		return EnemyStatus{
 			Status: Status{
-				Hp: 100,
+				Hp: 200,
 			},
 			Exp:   200,
 			Speed: 0.5,
