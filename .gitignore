@@ -29,3 +29,4 @@ go.work.sum
 # This folder includes built files
 mobile/android
 mobile/ios
+web
