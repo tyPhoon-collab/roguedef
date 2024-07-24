@@ -16,7 +16,6 @@ import (
 type UIEmbed struct {
 	ui          *ebitenui.UI
 	face        font.Face
-	track, fill *widget.ProgressBarImage
 	buttonImage *widget.ButtonImage
 }
 
@@ -48,25 +47,6 @@ func (u *UIEmbed) BasicTextOpts(text string) widget.TextOpt {
 	return widget.TextOpts.Text(text, u.face, color.White)
 }
 
-func (u *UIEmbed) BasicProgressBarOpts() widget.ProgressBarOpt {
-	return func(p *widget.ProgressBar) {
-		opts := []widget.ProgressBarOpt{
-			widget.ProgressBarOpts.WidgetOpts(
-				widget.WidgetOpts.LayoutData(widget.RowLayoutData{
-					Position: widget.RowLayoutPositionCenter,
-					Stretch:  true,
-				}),
-			),
-			widget.ProgressBarOpts.Values(0, 20, 20),
-			widget.ProgressBarOpts.Images(u.track, u.fill),
-		}
-
-		for _, opt := range opts {
-			opt(p)
-		}
-	}
-}
-
 func (u *UIEmbed) UI() *ebitenui.UI {
 	return u.ui
 }
@@ -94,11 +74,10 @@ func NewUIEmbed(container *widget.Container) *UIEmbed {
 	}
 
 	buttonImage := LoadButtonImage()
-	track, fill := LoadProgressBarImage()
 
 	ui := &ebitenui.UI{Container: container}
 
-	return &UIEmbed{ui: ui, face: face, buttonImage: buttonImage, track: track, fill: fill}
+	return &UIEmbed{ui: ui, face: face, buttonImage: buttonImage}
 }
 
 func LoadButtonImage() *widget.ButtonImage {

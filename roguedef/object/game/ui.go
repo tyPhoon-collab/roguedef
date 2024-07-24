@@ -111,13 +111,22 @@ func NewUI(scene *system.Scene) *UI {
 	u.phaseText = widget.NewText(
 		u.BasicTextOpts(""),
 	)
+
+	track, fill := system.LoadProgressBarImage()
 	u.expProgressBar = widget.NewProgressBar(
 		widget.ProgressBarOpts.WidgetOpts(
 			widget.WidgetOpts.LayoutData(widget.RowLayoutData{
 				Stretch: true,
 			}),
 		),
-		u.BasicProgressBarOpts(),
+		widget.ProgressBarOpts.WidgetOpts(
+			widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+				Position: widget.RowLayoutPositionCenter,
+				Stretch:  true,
+			}),
+		),
+		widget.ProgressBarOpts.Values(0, 20, 20),
+		widget.ProgressBarOpts.Images(track, fill),
 	)
 	statusContainer.AddChild(u.phaseText)
 	statusContainer.AddChild(u.expProgressBar)
