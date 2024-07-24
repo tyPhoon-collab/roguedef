@@ -16,6 +16,7 @@ import (
 type UIEmbed struct {
 	ui          *ebitenui.UI
 	face        font.Face
+	track, fill *widget.ProgressBarImage
 	buttonImage *widget.ButtonImage
 }
 
@@ -47,6 +48,25 @@ func (u *UIEmbed) BasicTextOpts(text string) widget.TextOpt {
 	return widget.TextOpts.Text(text, u.face, color.White)
 }
 
+func (u *UIEmbed) BasicProgressBarOpts() widget.ProgressBarOpt {
+	return func(p *widget.ProgressBar) {
+		opts := []widget.ProgressBarOpt{
+			widget.ProgressBarOpts.WidgetOpts(
+				widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+					Position: widget.RowLayoutPositionCenter,
+					Stretch:  true,
+				}),
+			),
+			widget.ProgressBarOpts.Values(0, 20, 20),
+			widget.ProgressBarOpts.Images(u.track, u.fill),
+		}
+
+		for _, opt := range opts {
+			opt(p)
+		}
+	}
+}
+
 func (u *UIEmbed) UI() *ebitenui.UI {
 	return u.ui
 }
@@ -73,17 +93,15 @@ func NewUIEmbed(container *widget.Container) *UIEmbed {
 		panic(err)
 	}
 
-	buttonImage, err := LoadButtonImage()
-	if err != nil {
-		panic(err)
-	}
+	buttonImage := LoadButtonImage()
+	track, fill := LoadProgressBarImage()
 
 	ui := &ebitenui.UI{Container: container}
 
-	return &UIEmbed{ui: ui, face: face, buttonImage: buttonImage}
+	return &UIEmbed{ui: ui, face: face, buttonImage: buttonImage, track: track, fill: fill}
 }
 
-func LoadButtonImage() (*widget.ButtonImage, error) {
+func LoadButtonImage() *widget.ButtonImage {
 	tile := LoadImage(resources.ButtonTileImage)
 
 	images := make([]*image.NineSlice, 4)
@@ -95,7 +113,19 @@ func LoadButtonImage() (*widget.ButtonImage, error) {
 		Hover:    images[1],
 		Pressed:  images[2],
 		Disabled: images[3],
-	}, nil
+	}
+}
+
+func LoadProgressBarImage() (*widget.ProgressBarImage, *widget.ProgressBarImage) {
+	tile := LoadImage(resources.ProgressBarTileImage)
+
+	w := [3]int{6, 4, 6}
+	h := [3]int{7, 2, 7}
+
+	track := image.NewNineSlice(tile.SubImage(img.Rect(0, 0, 16, 16)).(*ebiten.Image), w, h)
+	fill := image.NewNineSlice(tile.SubImage(img.Rect(16, 0, 32, 16)).(*ebiten.Image), w, h)
+
+	return &widget.ProgressBarImage{Idle: track}, &widget.ProgressBarImage{Idle: fill}
 }
 
 func LoadFont() (font.Face, error) {

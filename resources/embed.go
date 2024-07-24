@@ -22,6 +22,9 @@ var BulletImage []byte
 //go:embed images/ui/button_tile.png
 var ButtonTileImage []byte
 
+//go:embed images/ui/progress_bar_tile.png
+var ProgressBarTileImage []byte
+
 //go:embed images/ui/window.png
 var WindowImage []byte
 

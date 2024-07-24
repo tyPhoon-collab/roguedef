@@ -14,7 +14,7 @@ type Player struct {
 	sprite        *system.Sprite
 	bulletSpawner *BulletSpawner
 	ui            *UI
-	expManager    *domain.ExpManager
+	*domain.ExpManager
 }
 
 func (p *Player) Register(g *Game, o *system.Object) {
@@ -27,7 +27,7 @@ func (p *Player) Draw(screen *ebiten.Image) {
 }
 
 func (p *Player) AddExp(exp int) {
-	changed := p.expManager.AddExp(exp)
+	changed := p.ExpManager.AddExp(exp)
 
 	if changed {
 		go p.onLevelChanged()
@@ -35,6 +35,7 @@ func (p *Player) AddExp(exp int) {
 }
 
 func (p *Player) onLevelChanged() {
+	p.ui.UpdateExpProgressBarMax()
 	v := p.ui.WaitShowUpgradeSelection()
 	switch v {
 	case upgrade.UpgradeFrequency:
@@ -57,7 +58,7 @@ func NewPlayer(pos Vec2) *Player {
 	player := &Player{
 		Transform:  transform,
 		sprite:     system.NewSprite(img).WithTransform(transform),
-		expManager: domain.NewExpManager(),
+		ExpManager: domain.NewExpManager(),
 	}
 
 	return player

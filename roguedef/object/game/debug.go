@@ -49,11 +49,11 @@ func (d *Debug) Draw(screen *ebiten.Image) {
 		"TPS: %0.2f\nPhase: %d\nExp: %d\nLevel: %d\nBulletFreq: %d\nSpawnFreq: %d\nExpToNextLevel: %d\nEnemyQueueLen: %d\n",
 		tps,
 		d.phaseManager.phase,
-		d.player.expManager.Exp(),
-		d.player.expManager.Level(),
+		d.player.Exp(),
+		d.player.Level(),
 		d.bulletSpawner.Frequency.Milliseconds(),
 		d.enemySpawner.Frequency.Milliseconds(),
-		domain.ExpToNextLevel(d.player.expManager.Level()),
+		domain.ExpToNextLevel(d.player.Level()),
 		d.enemySpawner.queue.Len(),
 	), 10, 200)
 

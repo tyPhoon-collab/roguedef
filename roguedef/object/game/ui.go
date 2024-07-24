@@ -3,6 +3,7 @@ package game
 import (
 	"fmt"
 	"image"
+	"roguedef/domain"
 	"roguedef/domain/upgrade"
 	"roguedef/system"
 
@@ -16,17 +17,23 @@ type UI struct {
 	scene               *system.Scene
 	damageTextContainer *widget.Container
 	phaseText           *widget.Text
+	expProgressBar      *widget.ProgressBar
 	phaseManager        *PhaseManager
+	player              *Player
 }
 
 func (u *UI) Register(g *Game, o *system.Object) {
 	u.phaseManager = g.ObjectByTag("phase_manager").Data.(*PhaseManager)
+	u.player = g.ObjectByTag("player").Data.(*Player)
+
+	u.UpdateExpProgressBarMax()
 }
 
 func (u *UI) Update() {
 	u.UIEmbed.Update()
 
 	u.phaseText.Label = fmt.Sprintf("Phase: %d", u.phaseManager.Phase())
+	u.expProgressBar.SetCurrent(u.player.Exp())
 }
 
 func (u *UI) WaitShowGameOver() {
@@ -40,6 +47,10 @@ func (u *UI) WaitShowUpgradeSelection() upgrade.Upgrade {
 	v := <-u.ShowUpgradeSelection()
 	system.TimeScale = 1
 	return v
+}
+
+func (u *UI) UpdateExpProgressBarMax() {
+	u.expProgressBar.Max = domain.ExpToNextLevel(u.player.Level())
 }
 
 func (u *UI) ShowGameOver() chan struct{} {
@@ -76,22 +87,45 @@ func NewUI(scene *system.Scene) *UI {
 
 	u := &UI{UIEmbed: system.NewUIEmbed(rootContainer), scene: scene}
 
-	damageTextContainer := widget.NewContainer()
-	rootContainer.AddChild(damageTextContainer)
-	u.damageTextContainer = damageTextContainer
+	u.damageTextContainer = widget.NewContainer()
+
+	statusRootContainer := widget.NewContainer(
+		widget.ContainerOpts.Layout(widget.NewAnchorLayout(
+			widget.AnchorLayoutOpts.Padding(widget.NewInsetsSimple(10)),
+		)),
+	)
 
 	statusContainer := widget.NewContainer(
+		u.BackgroundImage(),
+		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.AnchorLayoutData{
+			HorizontalPosition: widget.AnchorLayoutPositionCenter,
+			VerticalPosition:   widget.AnchorLayoutPositionStart,
+			StretchHorizontal:  true,
+		})),
 		widget.ContainerOpts.Layout(widget.NewRowLayout(
-			widget.RowLayoutOpts.Direction(widget.DirectionHorizontal),
+			widget.RowLayoutOpts.Direction(widget.DirectionVertical),
 			widget.RowLayoutOpts.Spacing(10),
 			widget.RowLayoutOpts.Padding(widget.NewInsetsSimple(10)),
 		)),
 	)
-	rootContainer.AddChild(statusContainer)
 	u.phaseText = widget.NewText(
 		u.BasicTextOpts(""),
 	)
+	u.expProgressBar = widget.NewProgressBar(
+		widget.ProgressBarOpts.WidgetOpts(
+			widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+				Stretch: true,
+			}),
+		),
+		u.BasicProgressBarOpts(),
+	)
 	statusContainer.AddChild(u.phaseText)
+	statusContainer.AddChild(u.expProgressBar)
+
+	statusRootContainer.AddChild(statusContainer)
+
+	rootContainer.AddChild(u.damageTextContainer)
+	rootContainer.AddChild(statusRootContainer)
 
 	return u
 
