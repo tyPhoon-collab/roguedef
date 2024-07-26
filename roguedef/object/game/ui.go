@@ -6,6 +6,7 @@ import (
 	"roguedef/domain"
 	"roguedef/domain/upgrade"
 	"roguedef/system"
+	"time"
 
 	"github.com/ebitenui/ebitenui/widget"
 )
@@ -17,9 +18,13 @@ type UI struct {
 	scene               *system.Scene
 	damageTextContainer *widget.Container
 	phaseText           *widget.Text
+	elapsedTimeText     *widget.Text
 	expProgressBar      *widget.ProgressBar
 	phaseManager        *PhaseManager
 	player              *Player
+
+	elapsedTime        time.Duration
+	elapsedTimeUpdater *system.Looper
 }
 
 func (u *UI) Register(g *Game, o *system.Object) {
@@ -30,6 +35,7 @@ func (u *UI) Register(g *Game, o *system.Object) {
 }
 
 func (u *UI) Update() {
+	u.elapsedTimeUpdater.Update()
 	u.UIEmbed.Update()
 
 	u.phaseText.Label = fmt.Sprintf("Phase: %d", u.phaseManager.Phase())
@@ -108,9 +114,29 @@ func NewUI(scene *system.Scene) *UI {
 			widget.RowLayoutOpts.Padding(widget.NewInsetsSimple(10)),
 		)),
 	)
+	statusUpperContainer := widget.NewContainer(
+		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{
+			Stretch: true,
+		})),
+		widget.ContainerOpts.Layout(widget.NewAnchorLayout()),
+	)
+
 	u.phaseText = widget.NewText(
+		widget.TextOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.AnchorLayoutData{
+			HorizontalPosition: widget.AnchorLayoutPositionStart,
+			VerticalPosition:   widget.AnchorLayoutPositionCenter,
+		})),
 		u.BasicTextOpts(""),
 	)
+	u.elapsedTimeText = widget.NewText(
+		widget.TextOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.AnchorLayoutData{
+			HorizontalPosition: widget.AnchorLayoutPositionEnd,
+			VerticalPosition:   widget.AnchorLayoutPositionCenter,
+		})),
+		u.BasicTextOpts(u.formatElapsedTimeText()),
+	)
+
+	u.elapsedTimeUpdater = system.NewLooper(time.Second, u.updateElapsedTimeText)
 
 	track, fill := system.LoadProgressBarImage()
 	u.expProgressBar = widget.NewProgressBar(
@@ -128,7 +154,11 @@ func NewUI(scene *system.Scene) *UI {
 		widget.ProgressBarOpts.Values(0, 20, 20),
 		widget.ProgressBarOpts.Images(track, fill),
 	)
-	statusContainer.AddChild(u.phaseText)
+
+	statusUpperContainer.AddChild(u.phaseText)
+	statusUpperContainer.AddChild(u.elapsedTimeText)
+
+	statusContainer.AddChild(statusUpperContainer)
 	statusContainer.AddChild(u.expProgressBar)
 
 	statusRootContainer.AddChild(statusContainer)
@@ -225,4 +255,13 @@ func (u *UI) newPopupButton(text string, do func(args *widget.ButtonClickedEvent
 		)),
 		u.BasicButtonOpts(text, do),
 	)
+}
+
+func (u *UI) updateElapsedTimeText() {
+	u.elapsedTime += time.Second
+	u.elapsedTimeText.Label = u.formatElapsedTimeText()
+}
+
+func (u *UI) formatElapsedTimeText() string {
+	return "Time: " + system.FormatDuration(u.elapsedTime)
 }

@@ -2,6 +2,7 @@ package system
 
 import (
 	"bytes"
+	"fmt"
 	"math"
 	"time"
 
@@ -46,4 +47,17 @@ func LoadImage(embedded []byte) *ebiten.Image {
 		panic(err)
 	}
 	return img
+}
+
+func FormatDuration(duration time.Duration) string {
+	hours := int(duration.Hours())
+	minutes := int(duration.Minutes()) % 60
+	seconds := int(duration.Seconds()) % 60
+
+	if hours > 0 {
+		return fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
+	} else if minutes > 0 {
+		return fmt.Sprintf("%02d:%02d", minutes, seconds)
+	}
+	return fmt.Sprintf("%02d", seconds)
 }
