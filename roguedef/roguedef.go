@@ -3,6 +3,7 @@ package roguedef
 import (
 	"roguedef/ds"
 	"roguedef/rect"
+	"roguedef/roguedef/object/equip"
 	"roguedef/roguedef/object/game"
 	"roguedef/roguedef/object/title"
 	"roguedef/system"
@@ -17,6 +18,7 @@ func NewRogueDef() ebiten.Game {
 	routes := system.Routes{
 		"game":  buildGame,
 		"title": buildTitle,
+		"equip": buildEquip,
 	}
 
 	return system.NewScene(routes, "title")
@@ -27,6 +29,15 @@ func buildTitle(scene *system.Scene) *system.Game {
 
 	g.AddObjectWithData(title.NewUI(scene)).WithTag("ui")
 	g.AddObjectWithData(title.NewBackground(320, 640))
+
+	return g
+}
+
+func buildEquip(scene *system.Scene) *system.Game {
+	g := system.NewGame()
+
+	g.AddObjectWithData(equip.NewBackground(320, 640))
+	g.AddObjectWithData(equip.NewUI(scene)).WithTag("ui")
 
 	return g
 }

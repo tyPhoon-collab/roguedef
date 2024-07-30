@@ -50,7 +50,7 @@ func NewUI(scene *system.Scene) *UI {
 				Position: widget.RowLayoutPositionCenter,
 			})),
 		u.BasicButtonOpts("Play", func(args *widget.ButtonClickedEventArgs) {
-			scene.Push("game")
+			scene.Push("equip")
 		}),
 	))
 
