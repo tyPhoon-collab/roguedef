@@ -1,0 +1,36 @@
+name: Deploy Ebiten Game
+
+on:
+  push: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22" # 使用している最新の安定版Goバージョン
+
+      - name: Install dependencies
+        run: |
+          go mod tidy  # 依存関係を整理・インストール
+
+      - name: Build WASM
+        run: |
+          env GOOS=js GOARCH=wasm go build -o web/RogueDef.wasm .
+
+      - name: Download wasm_exec.js
+        run: |
+          cp $(go env GOROOT)/misc/wasm/wasm_exec.js web/
+
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy ./web --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }}
